@@ -582,7 +582,6 @@ auth.onAuthStateChanged(user => {
     role = isKom ? 'komersil' : 'marcom';
     document.getElementById('role-badge').textContent = isKom ? 'Komersil' : 'Marcom';
     document.getElementById('sb-add-btn').style.display = isKom ? 'none' : '';
-    document.getElementById('btn-req-baru').style.display = isKom ? 'none' : '';
     
     // Kunci Akses Tab Payment untuk Komersil
     if(isKom) {
