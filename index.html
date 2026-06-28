@@ -180,6 +180,17 @@ input[type="date"].iinp{width:auto;min-width:110px}
 .pgb.act{background:linear-gradient(135deg,var(--y),var(--o));border-color:transparent;color:var(--tx);font-weight:700}
 .empty{text-align:center;padding:44px 20px;color:var(--tx3)}.ei{font-size:30px;margin-bottom:9px;opacity:.4}
 
+/* MODAL DETAIL */
+.det-sec { margin-bottom: 22px; }
+.det-hd { font-family: var(--fh); font-size: 9.5px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--bd); }
+.det-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 12px; }
+.det-item { display: flex; flex-direction: column; gap: 4px; }
+.det-lbl { font-size: 9px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .6px; font-family: var(--fb); }
+.det-val { font-size: 13px; color: var(--tx); font-family: var(--fb); font-weight: 500;}
+.det-link { color: var(--o); text-decoration: none; font-weight: 600; font-size: 12px; display:inline-flex; align-items:center; gap:3px; }
+.det-link:hover { text-decoration: underline; }
+.det-notes { background: var(--s2); border: 1px solid var(--bd); border-radius: var(--r); padding: 10px 12px; font-size: 12.5px; color: var(--tx); line-height: 1.5; margin-top: 2px; min-height: 40px;}
+
 /* ══ MODAL ══ */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:500;align-items:center;justify-content:center;padding:20px}
 .ov.show{display:flex}
@@ -463,7 +474,7 @@ body.role-komersil #tab-print .cards { grid-template-columns: repeat(3, 1fr); }
       <button class="add-si" onclick="addSI()"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Tambah Sub-Item</button>
     </div>
     <div class="fsec" id="fsec-fin">
-      <div class="fst">Status &amp; Finance</div>
+      <div class="fst">Status & Finance</div>
       <div class="fg2">
         <div class="fg">
           <label class="fl">Progress</label>
@@ -1160,7 +1171,38 @@ function closeNew(){document.getElementById('ov-new').classList.remove('show');}
 function openDet(id){
   const r=data.find(x=>x.id===id);if(!r)return; document.getElementById('det-t').textContent=r.title;
   let eb=document.getElementById('det-edit'); if(role==='marcom'){eb.style.display='';eb.onclick=()=>{closeDet();openEdit(id);};}else eb.style.display='none';
-  document.getElementById('det-body').innerHTML=`<div class="ds"><div class="dt">Data NPB</div><div class="dg"><div class="df"><div class="dfl">Tgl Kirim</div><div class="dfv">${fmtDateID(r.sentDate)}</div></div><div class="df"><div class="dfl">Outlet / Depo</div><div class="dfv">${r.outlet||'—'}</div></div><div class="df"><div class="dfl">Vendor</div><div class="dfv">${vendBadgeHTML(r.vendor)}</div></div><div class="df"><div class="dfl">Tgl Cetak / Nota</div><div class="dfv">${fmtDateID(r.printDate)}</div></div></div></div><div class="ds"><div class="dt">Sub-Item (${r.items.length})</div><table class="st"><thead><tr><th>Nama</th><th>Qty</th><th>Ukuran</th><th>Progress</th></tr></thead><tbody>${r.items.map(x=>`<tr><td>${x.name}</td><td>${x.qty}</td><td>${x.size}</td><td>${progBadge(x.progress)}</td></tr>`).join('')}</tbody></table></div>` + (role === 'marcom' ? `<div class="ds"><div class="dt">Finance</div><div class="dg"><div class="df"><div class="dfl">Status Finance</div><div class="dfv">${finBadge(r.financeStatus)}</div></div><div class="df"><div class="dfl">Nominal</div><div class="dfv">${r.nominal?'Rp '+Number(r.nominal).toLocaleString('id-ID'):'—'}</div></div></div></div>` : '');
+  let trelloHtml = r.trello ? `<a href="${r.trello}" target="_blank" class="det-link">Buka <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg></a>` : '<span class="det-val" style="color:var(--tx3)">—</span>';
+  let html = `
+  <div class="det-sec">
+    <div class="det-hd">Data NPB</div>
+    <div class="det-grid">
+      <div class="det-item"><div class="det-lbl">Tgl Kirim NPB</div><div class="det-val">${fmtDateID(r.sentDate)}</div></div>
+      <div class="det-item"><div class="det-lbl">Tgl Diterima</div><div class="det-val">${fmtDateID(r.recvDate)}</div></div>
+      <div class="det-item"><div class="det-lbl">Outlet / Depo</div><div class="det-val">${r.outlet||'—'}</div></div>
+      <div class="det-item"><div class="det-lbl">Divisi</div><div class="det-val">${r.division||'—'}</div></div>
+      <div class="det-item"><div class="det-lbl">Vendor</div><div class="det-val">${vendBadgeHTML(r.vendor)}</div></div>
+      <div class="det-item"><div class="det-lbl">Tgl Masuk Cetak</div><div class="det-val">${fmtDateID(r.printDate)}</div></div>
+      <div class="det-item" style="grid-column: 1 / -1;"><div class="det-lbl">Trello</div><div class="det-val">${trelloHtml}</div></div>
+    </div>
+  </div>
+  <div class="det-sec">
+    <div class="det-hd">Sub-Item (${r.items.length})</div>
+    <table class="st">
+      <thead><tr><th style="width:30px">#</th><th>Nama Item</th><th>Qty</th><th>Ukuran</th><th>Progress</th></tr></thead>
+      <tbody>${r.items.map((x,i)=>`<tr><td>${i+1}</td><td style="font-weight:600;color:var(--tx)">${x.name}</td><td>${x.qty||'—'}</td><td>${x.size||'—'}</td><td>${progBadge(x.progress)}</td></tr>`).join('')}</tbody>
+    </table>
+  </div>
+  <div class="det-sec" style="margin-bottom:0">
+    <div class="det-hd">Status & Finance</div>
+    <div class="det-grid" style="margin-bottom:14px">
+      <div class="det-item"><div class="det-lbl">Progress</div><div class="det-val">${progBadge(r.progress)}</div></div>
+      ${role==='marcom'?`<div class="det-item"><div class="det-lbl">Finance</div><div class="det-val">${finBadge(r.financeStatus)}</div></div>
+      <div class="det-item"><div class="det-lbl">No. Invoice</div><div class="det-val" style="font-weight:600">${r.invoice||'—'}</div></div>
+      <div class="det-item"><div class="det-lbl">Nominal</div><div class="det-val" style="font-weight:600;color:var(--tx)">${r.nominal?'Rp '+Number(r.nominal).toLocaleString('id-ID'):'—'}</div></div>`:''}
+    </div>
+    <div class="det-item"><div class="det-lbl">Catatan</div><div class="det-notes">${r.notes?r.notes.replace(/\n/g,'<br>'):'<span style="opacity:0.4;font-style:italic">Tidak ada catatan...</span>'}</div></div>
+  </div>`;
+  document.getElementById('det-body').innerHTML = html;
   document.getElementById('ov-det').classList.add('show');
 }
 function closeDet(){document.getElementById('ov-det').classList.remove('show');}
