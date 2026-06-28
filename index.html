@@ -6,13 +6,10 @@
 <title>Print Tracker Baba Rafi</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-<!-- 1. DUMMY FAVICON (Silakan ubah link href di bawah ini dengan link icon .png atau .ico kamu) -->
 <link rel="icon" type="image/png" href="https://via.placeholder.com/32x32/F47B20/FFFFFF?text=BR">
 
-<!-- Library untuk Export JPG -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-<!-- 🔥 FIREBASE SDK (Modern Cloud Database) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -237,7 +234,7 @@ select.fsel:disabled{background-image:none}
 .fdd-opt.add{color:var(--o);font-weight:600;border-top:1px solid var(--bd)}
 .fdd-addrow{padding:8px 11px;border-top:1px solid var(--bd);display:none}
 .fdd-addrow.show{display:block}
-.fdd-addrow input[type=text]{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:6px 8px;font-size:12px;font-family:var(--fb);color:var(--tx);outline:none;margin-bottom:6px}
+.fdd-addrow input[type=text]{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:5px 8px;font-size:12px;font-family:var(--fb);color:var(--tx);outline:none;margin-bottom:6px}
 .fdd-addrow input[type=text]:focus{border-color:var(--o)}
 .fdd-colorrow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .fdd-colorrow label{font-size:10.5px;color:var(--tx3)}
@@ -270,22 +267,18 @@ select.fsel:disabled{background-image:none}
 </head>
 <body>
 
-<!-- ================== LOGIN SCREEN ================== -->
 <div id="login-screen">
   <div class="login-card">
     
-    <!-- 2. DUMMY LOGO (Silakan ubah link src di bawah ini dengan link logo kamu) -->
     <img src="https://via.placeholder.com/200x50?text=LOGO+DUMMY" alt="Logo Perusahaan" style="height:45px; margin-bottom:12px; border-radius:6px; object-fit:contain; width:auto; max-width:100%;">
     
     <div class="login-logo"><div class="logo-mark">🖨</div>Print Tracker</div>
     <div id="login-err" style="color:var(--red);font-size:12px;margin-bottom:12px;font-weight:600;display:none;">Email atau password salah!</div>
     
-    <!-- PENGGUNAAN FORM AGAR BROWSER TIDAK BINGUNG SAAT MENGELUARKAN POPUP SIMPAN PASSWORD -->
     <form onsubmit="doLogin(event)">
       <input type="email" id="login-email" placeholder="Email Akun" required autocomplete="username" style="width:100%;padding:12px;margin-bottom:12px;border:1px solid var(--bd);border-radius:6px;font-family:var(--fb);font-size:13px;outline:none;box-sizing:border-box;">
       <input type="password" id="login-pass" placeholder="Password" required autocomplete="current-password" style="width:100%;padding:12px;margin-bottom:12px;border:1px solid var(--bd);border-radius:6px;font-family:var(--fb);font-size:13px;outline:none;box-sizing:border-box;">
       
-      <!-- 3. KOTAK CENTANG INGAT SAYA -->
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:20px; text-align:left;">
         <input type="checkbox" id="login-remember" checked style="width:15px; height:15px; margin:0; cursor:pointer;">
         <label for="login-remember" style="font-size:12.5px; font-family:var(--fb); color:var(--tx2); cursor:pointer; user-select:none;">Ingat Saya</label>
@@ -297,7 +290,6 @@ select.fsel:disabled{background-image:none}
   </div>
 </div>
 
-<!-- ================== MAIN APP ================== -->
 <nav class="nav">
   <div class="logo">
     <div class="logo-mark">🖨</div>Baba Rafi
@@ -315,7 +307,6 @@ select.fsel:disabled{background-image:none}
 </nav>
 
 <div class="bwrap">
-  <!-- SIDEBAR -->
   <div class="sb">
     <div class="sb-hd">
       <div class="sb-hdtitle">Periode Bulan</div>
@@ -327,10 +318,8 @@ select.fsel:disabled{background-image:none}
     <div class="sb-list" id="sb-list"></div>
   </div>
 
-  <!-- CONTENT -->
   <div class="ct">
     
-    <!-- ================== TAB: PRINT TRACKER ================== -->
     <div id="tab-print" class="tab-content active-tab">
       <div class="cards">
         <div class="card cy"><div class="c-label">Total Request</div><div class="c-val" id="s-tot">0</div><div class="c-sub" id="s-tot-sub">...</div></div>
@@ -392,7 +381,6 @@ select.fsel:disabled{background-image:none}
       </div>
     </div>
     
-    <!-- ================== TAB: PAYMENT TRACKER ================== -->
     <div id="tab-pay" class="tab-content">
       <div class="cards" style="grid-template-columns: repeat(4, 1fr);">
         <div class="card cy"><div class="c-label">Total Tagihan</div><div class="c-val" id="p-tot">0</div></div>
@@ -447,7 +435,6 @@ select.fsel:disabled{background-image:none}
   </div>
 </div>
 
-<!-- ══ MODALS ══ -->
 <div class="ov" id="ov-new">
  <div class="modal">
   <div class="mhd"><div class="mtl" id="mnew-t">Request Baru</div><button class="mcl" onclick="closeNew()">✕</button></div>
@@ -534,7 +521,6 @@ select.fsel:disabled{background-image:none}
 <div class="ddpop" id="ddpop"></div>
 <div id="toast"><span id="tmsg">✅ Tersimpan</span></div>
 
-<!-- RENDER AREA UNTUK EXPORT JPG -->
 <div id="print-area" style="position:fixed;top:0;left:-9999px;width:800px;background:#EFE9DE;color:#1C1510;padding:30px;font-family:'Inter',sans-serif;box-sizing:border-box;z-index:-10">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
     <div style="width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,#FBB80F,#F47B20);display:flex;align-items:center;justify-content:center;font-size:16px">🖨</div>
@@ -584,9 +570,7 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 function doLogin(e) {
-  // Prevent form submission dari mereload halaman
   e.preventDefault();
-  
   let email = document.getElementById('login-email').value;
   let pass = document.getElementById('login-pass').value;
   let rem = document.getElementById('login-remember').checked;
@@ -597,7 +581,7 @@ function doLogin(e) {
   
   err.style.display = 'none'; btn.textContent = 'Memverifikasi...';
 
-  // 4. LOGIKA "INGAT SAYA"
+  // SET SESI LOGIN BERDASARKAN CENTANG "INGAT SAYA"
   let persistence = rem ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
 
   auth.setPersistence(persistence).then(() => {
@@ -618,21 +602,19 @@ let isDataInitialized = false;
 auth.onAuthStateChanged(user => {
   if (user) {
     document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('login-pass').value = ''; // Mengamankan pass field
+    document.getElementById('login-pass').value = ''; 
     
-    // Set Role
-    let isKom = user.email.includes('komersil');
+    // Set Role (FIX: toLowerCase agar kebal huruf besar/kecil)
+    let isKom = user.email.toLowerCase().includes('komersil');
     role = isKom ? 'komersil' : 'marcom';
+    
     document.getElementById('role-badge').textContent = isKom ? 'Komersil' : 'Marcom';
     document.getElementById('sb-add-btn').style.display = isKom ? 'none' : '';
-    
-    // Tombol Request Baru tetap ADA untuk Komersil (Mereka hanya dibatasi isiannya)
-    document.getElementById('btn-req-baru').style.display = '';
     
     // Kunci Akses Tab Payment untuk Komersil
     if(isKom) {
       document.getElementById('tab-btn-pay').style.display = 'none';
-      switchTab('print'); // paksa kembali ke tab Print
+      switchTab('print'); 
     } else {
       document.getElementById('tab-btn-pay').style.display = '';
     }
@@ -680,6 +662,7 @@ function initData() {
     let arr = [];
     snap.forEach(doc => arr.push(doc.data()));
     data = arr.sort((a,b) => b.id - a.id);
+    syncFilterSelects(); // FIX: Refresh dropdown opsi segera setelah data masuk
     render();
   });
 }
@@ -715,10 +698,11 @@ function switchTab(t){
 }
 
 /* ════════════════════════════════════════
-   INLINE POPUP & FILTERS (FIREBASE ADAPTED)
+   INLINE POPUP & FILTERS
 ════════════════════════════════════════ */
 let activePop=null;
 function openPop(tid,rowId,field,opts,allowAdd,listName,subIdx){
+  if(role !== 'marcom') return; // FIX: Gembok tambahan
   if(activePop&&activePop.tid===tid){closePop();return;} closePop();
   const trig=document.getElementById(tid), pop=document.getElementById('ddpop'); if(!trig)return;
   const rect=trig.getBoundingClientRect(), r=data.find(x=>x.id===rowId);
@@ -744,6 +728,7 @@ function openPop(tid,rowId,field,opts,allowAdd,listName,subIdx){
   activePop={tid,rowId,field,subIdx:subIdx??-1};
 }
 function commitPopAdd(rowId,field,listName,subIdx,isV){
+  if(role !== 'marcom') return; // FIX: Gembok tambahan
   const v=document.getElementById('pop-addinp')?.value.trim(); if(!v){showToast('❌ Kosong');return;}
   let list = listName==='vendList' ? [...vendList] : [...divList];
   let updates = {};
@@ -757,14 +742,19 @@ function commitPopAdd(rowId,field,listName,subIdx,isV){
   showToast(`✅ Disimpan`);
 }
 function pickPop(rowId,f,v,si){
+  if(role !== 'marcom') return; // FIX: Gembok tambahan
   let r=data.find(x=>x.id===rowId); if(!r)return;
+  
+  // FIX: Optimistic UI (Layar berubah instan tanpa perlu menunggu Firebase)
   if(si>=0) {
-    let newItems = [...r.items]; newItems[si][f]=v;
-    db.collection('requests').doc(rowId.toString()).update({items: newItems});
+    r.items[si][f] = v;
+    db.collection('requests').doc(rowId.toString()).update({items: [...r.items]});
   } else {
+    r[f] = v;
     db.collection('requests').doc(rowId.toString()).update({[f]: v});
   }
-  closePop(); showToast('✅ Diperbarui');
+  
+  closePop(); render(); showToast('✅ Diperbarui');
 }
 function closePop(){ document.getElementById('ddpop').classList.remove('open'); if(activePop) document.getElementById(activePop.tid)?.classList.remove('open'); activePop=null;}
 document.addEventListener('click',e=>{if(!e.target.closest('#ddpop')&&!e.target.closest('.dd-trig'))closePop();});
@@ -777,7 +767,7 @@ function syncFilterSelects(){
 }
 
 /* ════════════════════════════════════════
-   FORM DROPDOWN (.fdd) (FIREBASE ADAPTED)
+   FORM DROPDOWN (.fdd)
 ════════════════════════════════════════ */
 function renderFDD(wh){
   const isV=wh==='vend', lst=isV?vendList:divList, val=isV?fpState.vend:fpState.div, cont=document.getElementById(isV?'fdd-vend':'fdd-div'); if(!cont)return;
@@ -842,7 +832,7 @@ document.addEventListener('click',e=>{if(!e.target.closest('#fdd-div')&&!e.targe
 function setFP(f,v){if(f==='div')fpState.div=v||''; if(f==='vend')fpState.vend=v||''; renderFDD('div');renderFDD('vend');}
 
 /* ════════════════════════════════════════
-   MAIN BEHAVIOR & MUTATIONS (FIREBASE)
+   MAIN BEHAVIOR
 ════════════════════════════════════════ */
 function setMonth(k){activeMonth=k;pg=1;syncFilters();render();}
 function renderSidebar(){ document.getElementById('sb-list').innerHTML=months.map(m=>`<div class="sb-item${m.key===activeMonth?' active':''}" onclick="setMonth('${m.key}')"><div class="sb-item-l"><span class="sb-item-name">${m.label}</span><span class="sb-item-cnt">${data.filter(r=>r.sentDate?.startsWith(m.key)).length} request</span></div>${role==='marcom'?`<button class="sb-del" onclick="event.stopPropagation();delMonthKey='${m.key}';document.getElementById('cmsg-m').textContent='Hapus periode ini?';document.getElementById('cbox-m').classList.add('show')"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>`:''}</div>`).join(''); }
@@ -888,6 +878,7 @@ function mkFinTrig(id,v){ if(role!=='marcom')return finBadge(v); let u=`fn-${id}
 
 function mkTxt(id,f,v,ph,isN,isD){ if(role!=='marcom') return isN?(v?`<span class="nval">Rp ${Number(v).toLocaleString('id-ID')}</span>`:`<span class="nnil">—</span>`):`<span style="color:var(--tx2);font-size:12px">${isD?fmtDateID(v):(v||'—')}</span>`; let u=`tx-${id}-${f}`; let dis=isN?(v?'Rp '+Number(v).toLocaleString('id-ID'):''):isD?fmtDateID(v):(v||''); return `<div class="edc" id="${u}" onclick="startTxt('${u}',${id},'${f}',${isN},${isD})"><span class="${!v?(isN?'nnil':''):isN?'nval':''}" style="font-size:12px;color:${v?'inherit':'var(--tx3)'}">${dis||ph}</span><svg class="eh" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>`; }
 function startTxt(u,id,f,isN,isD){
+  if(role !== 'marcom') return; // FIX: Gembok tambahan
   const r=data.find(x=>x.id===id), el=document.getElementById(u); if(!r||!el)return;
   let cur=r[f]||'', inpx=document.createElement('input'); inpx.className='iinp';
   if(isD){inpx.type='date';inpx.value=cur;}else{inpx.type='text';inpx.value=isN?(cur?Number(cur).toLocaleString('id-ID'):''):cur;inpx.placeholder=isN?'Nominal...':'Ketik...';}
@@ -895,6 +886,9 @@ function startTxt(u,id,f,isN,isD){
   el.replaceWith(inpx); inpx.focus(); if(!isD)inpx.select();
   const sav=()=>{ 
     let val = isD?inpx.value:isN?inpx.value.replace(/\./g,'').replace(',',''):inpx.value.trim(); 
+    
+    // FIX: Optimistic UI
+    r[f] = val; render(); 
     db.collection('requests').doc(id.toString()).update({[f]: val}).then(()=> showToast('✅ Tersimpan'));
   };
   inpx.onblur=sav; inpx.onkeydown=e=>{if(e.key==='Enter')inpx.blur();if(e.key==='Escape'){render();}};
@@ -910,10 +904,14 @@ function mkPayDate(id, val) {
   </div>`;
 }
 function startPayDate(u, id, cur) {
+  if(role !== 'marcom') return; // FIX: Gembok tambahan
   const r = data.find(x=>x.id===id), el=document.getElementById(u); if(!r||!el)return;
   let inp = document.createElement('input'); inp.type='date'; inp.className='iinp'; inp.value=cur;
   el.replaceWith(inp); inp.focus();
-  inp.onblur = () => { db.collection('requests').doc(id.toString()).update({transferDate: inp.value}).then(()=> showToast('✅ Tanggal diupdate')); };
+  inp.onblur = () => { 
+    r.transferDate = inp.value; renderPay(); // Optimistic UI
+    db.collection('requests').doc(id.toString()).update({transferDate: inp.value}).then(()=> showToast('✅ Tanggal diupdate')); 
+  };
   inp.onkeydown = e => { if(e.key==='Enter')inp.blur(); if(e.key==='Escape'){ renderPay(); }};
 }
 
@@ -954,15 +952,18 @@ function render(){
 /* ════════════════════════════════════════
    RENDER PAYMENT TRACKER TABLE
 ════════════════════════════════════════ */
-function setPayField(id,f,val){ db.collection('requests').doc(id.toString()).update({[f]: val}).then(()=> showToast('✅ Update sukses')); }
+function setPayField(id,f,val){ 
+  if(role !== 'marcom') return; 
+  let r=data.find(x=>x.id===id); if(r){ r[f]=val; renderPay(); } // Optimistic
+  db.collection('requests').doc(id.toString()).update({[f]: val}).then(()=> showToast('✅ Update sukses')); 
+}
+
 function renderPay(){
   let fv=document.getElementById('p-vend').value, c=role==='marcom', fs=document.getElementById('p-stat').value;
   let fil=data.filter(r=>r.sentDate?.startsWith(activeMonth) && (!fv||r.vendor===fv) && (!fs||r.financeStatus===fs));
   document.getElementById('empty-pay').style.display=fil.length?'none':'block';
   
   let totalNom=0, sumLunas=0, sumBelum=0;
-  
-  // Real-time Date
   let dateToday = new Date().toISOString().split('T')[0];
   document.getElementById('p-lunas-label').textContent = 'Nominal Lunas (Per ' + fmtDateID(dateToday) + ')';
   
@@ -1080,7 +1081,6 @@ function saveReq(){
   let t = document.getElementById('e-title').value.trim();
   let o = document.getElementById('e-outlet').value.trim(); 
   
-  // PENAMBAHAN VALIDASI WAJIB
   if(!sDate || !t || o===''){
     showToast('❌ Tgl NPB, Nama & Outlet wajib diisi!');
     return;
@@ -1095,8 +1095,7 @@ function saveReq(){
   db.collection('requests').doc(docId).set(req, {merge:true}).then(() => {
     closeNew(); 
 
-    // AUTO-SWITCH BULAN BERDASARKAN TGL NPB BARU
-    let reqMonth = sDate.substring(0, 7); // Format: "YYYY-MM"
+    let reqMonth = sDate.substring(0, 7); 
     if (reqMonth !== activeMonth) {
       if(!months.find(m => m.key === reqMonth)) {
         let year = reqMonth.split('-')[0];
@@ -1110,7 +1109,6 @@ function saveReq(){
         activeMonth = reqMonth;
       }
     }
-    
     showToast('✅ Tersimpan');
   });
 }
