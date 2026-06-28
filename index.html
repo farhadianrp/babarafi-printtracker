@@ -32,7 +32,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:13px;l
 /* LOGIN SCREEN */
 #login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 999999; display: flex; align-items: center; justify-content: center; }
 .login-card { background: #fff; padding: 35px 30px; border-radius: 12px; box-shadow: 0 8px 30px rgba(100,70,20,0.12); width: 100%; max-width: 320px; border: 1px solid var(--bd); text-align: center; }
-.login-logo { font-family: var(--fh); font-size: 17px; font-weight: 800; color: var(--tx); margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; letter-spacing:-0.5px;}
+.login-logo { font-family: var(--fh); font-size: 22px; font-weight: 800; color: #552d14; margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; letter-spacing:-0.5px;}
 .login-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--y), var(--o)); border: none; border-radius: 6px; color: var(--tx); font-weight: 700; font-size: 14px; cursor: pointer; font-family: var(--fb); transition: 0.2s;}
 .login-btn:hover { filter: brightness(1.05); }
 
@@ -307,7 +307,7 @@ body.role-komersil #tab-print .cards { grid-template-columns: repeat(3, 1fr); }
 
 <nav class="nav">
   <div class="logo">
-    <img src="https://raw.githubusercontent.com/farhadianrp/babarafi-printtracker/refs/heads/main/Original.png" alt="Baba Rafi" style="height: 35px;width: auto; object-fit: contain;">
+    <img src="https://raw.githubusercontent.com/farhadianrp/babarafi-printtracker/refs/heads/main/Original.png" alt="Baba Rafi" style="height: 26px; width: auto; object-fit: contain;">
     <div class="tab-sw">
       <button class="t-btn active" id="tab-btn-print" onclick="switchTab('print')">Print Tracker</button>
       <button class="t-btn" id="tab-btn-pay" onclick="switchTab('pay')">Payment Tracker</button>
@@ -676,7 +676,7 @@ function initData() {
     if(months.length > 0 && !months.find(m => m.key === activeMonth)) activeMonth = months[0].key;
     
     renderSidebar();
-    syncFilters();
+    syncFilterSelects();
     renderFDD('div'); renderFDD('vend');
   });
 
@@ -885,7 +885,7 @@ function setFP(f,v){if(f==='div')fpState.div=v||''; if(f==='vend')fpState.vend=v
 /* ════════════════════════════════════════
    MAIN BEHAVIOR
 ════════════════════════════════════════ */
-function setMonth(k){activeMonth=k;pg=1;syncFilters();render();}
+function setMonth(k){activeMonth=k;pg=1;syncFilterSelects();render();}
 function renderSidebar(){ document.getElementById('sb-list').innerHTML=months.map(m=>`<div class="sb-item${m.key===activeMonth?' active':''}" onclick="setMonth('${m.key}')"><div class="sb-item-l"><span class="sb-item-name">${m.label}</span><span class="sb-item-cnt">${data.filter(r=>r.sentDate?.startsWith(m.key)).length} request</span></div>${role==='marcom'?`<button class="sb-del" onclick="event.stopPropagation();delMonthKey='${m.key}';document.getElementById('cmsg-m').textContent='Hapus periode ini?';document.getElementById('cbox-m').classList.add('show')"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>`:''}</div>`).join(''); }
 function doAddMonth(){
   let m=document.getElementById('add-m').value, y=document.getElementById('add-y').value, k=y+'-'+m.padStart(2,'0'), l=MN[m-1]+' '+y; 
@@ -905,7 +905,7 @@ function doDeleteMonth(){
     });
   }
 }
-function openAddMonth(){let s=document.getElementById('add-y');s.innerHTML='';for(let i=2024;i<=2030;i++)s.innerHTML+=`<option value="${i}"${i===2026?' selected':''}>${i}</option>`;document.getElementById('ov-month').classList.add('show');}
+function openAddMonth(){let s=document.getElementById('add-y');s.innerHTML='';for(let i=2024;i<=2050;i++)s.innerHTML+=`<option value="${i}"${i===2026?' selected':''}>${i}</option>`;document.getElementById('ov-month').classList.add('show');}
 
 function updateStats(){
   let r=data.filter(x=>x.sentDate?.startsWith(activeMonth));
