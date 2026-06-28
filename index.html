@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Print Tracker Baba Rafi</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{
+  --y:#FBB80F;--o:#F47B20;--red:#E2231A;
+  --bg:#EFE9DE;--s1:#FFFFFF;--s2:#FAF6EF;--s3:#F2EDE3;
+  --bd:#E0D5BF;--bd2:#C4B090;
+  --tx:#1C1510;--tx2:#7A6040;--tx3:#A89070;
+  --ok:#1E7A46;--info:#1D4ED8;--army:#4A6741;
+  --r:8px;--rl:12px;
+  --fh:'Plus Jakarta Sans',sans-serif;--fb:'Inter',sans-serif;
+  --sb:210px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:13px;line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px}
+
+/* NAV & TABS */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:50px;background:var(--s1);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:200;box-shadow:0 1px 4px rgba(160,120,50,.08)}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--fh);font-weight:800;font-size:14px;letter-spacing:-.3px;color:var(--tx)}
+.logo-mark{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,var(--y),var(--o));display:flex;align-items:center;justify-content:center;font-size:13px}
+
+.tab-sw { display: flex; align-items: center; gap: 2px; background: var(--s2); border: 1px solid var(--bd); border-radius: 8px; padding: 3px; margin-left: 20px; }
+.t-btn { padding: 4px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: var(--fb); cursor: pointer; border: none; background: transparent; color: var(--tx3); transition: all .15s; }
+.t-btn:hover { color: var(--tx); }
+.t-btn.active { background: linear-gradient(135deg, var(--y), var(--o)); color: var(--tx); box-shadow: 0 2px 6px rgba(244,123,32,.2); border-color: transparent; }
+
+.nav-r{display:flex;align-items:center;gap:8px}
+.role-sw{display:flex;align-items:center;gap:3px;background:var(--s2);border:1px solid var(--bd);border-radius:20px;padding:2px 3px}
+.ro{padding:3px 10px;border-radius:16px;font-size:11px;font-weight:600;font-family:var(--fb);cursor:pointer;border:none;background:transparent;color:var(--tx3);transition:all .18s}
+.ro.active{background:linear-gradient(135deg,var(--y),var(--o));color:var(--tx)}
+.av{width:27px;height:27px;border-radius:50%;background:linear-gradient(135deg,var(--o),var(--red));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+
+/* LAYOUT */
+.bwrap{display:flex;flex:1;height:calc(100vh - 50px)}
+.tab-content { display: none; flex-direction: column; animation: sdn .2s ease; }
+.tab-content.active-tab { display: flex; }
+
+/* SIDEBAR */
+.sb{width:var(--sb);flex-shrink:0;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow-y:auto}
+.sb-hd{padding:12px 14px 10px;border-bottom:1px solid var(--bd)}
+.sb-hdtitle{font-family:var(--fh);font-weight:700;font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.sb-add{width:100%;padding:6px 9px;border-radius:var(--r);border:1.5px dashed var(--bd2);background:transparent;color:var(--o);font-size:11.5px;font-weight:600;font-family:var(--fb);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .15s}
+.sb-add:hover{border-color:var(--o);background:rgba(244,123,32,.05)}
+.sb-list{padding:6px 8px;display:flex;flex-direction:column;gap:2px;flex:1}
+.sb-item{display:flex;align-items:center;justify-content:space-between;padding:7px 9px;border-radius:var(--r);cursor:pointer;transition:all .15s;border:1px solid transparent}
+.sb-item:hover{background:var(--s2);border-color:var(--bd)}
+.sb-item.active{background:rgba(244,123,32,.1);border-color:rgba(244,123,32,.3)}
+.sb-item-l{display:flex;flex-direction:column;gap:1px}
+.sb-item-name{font-size:12px;font-weight:600;color:var(--tx);font-family:var(--fh)}
+.sb-item.active .sb-item-name{color:var(--o)}
+.sb-item-cnt{font-size:10px;color:var(--tx3)}
+.sb-item.active .sb-item-cnt{color:var(--o);opacity:.8}
+.sb-del{width:20px;height:20px;border-radius:4px;border:none;background:transparent;color:var(--tx3);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;opacity:0}
+.sb-item:hover .sb-del{opacity:1}
+.sb-del:hover{background:rgba(226,35,26,.1);color:var(--red)}
+
+/* CONTENT */
+.ct{flex:1;overflow-y:auto;padding:18px 20px}
+
+/* CARDS */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--rl);padding:13px 15px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.cy::before{background:var(--y)}.co::before{background:var(--o)}.cg::before{background:var(--ok)}.ci::before{background:var(--info)}
+.c-label{font-size:9.5px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;margin-top:3px}
+.c-val{font-family:var(--fh);font-size:26px;font-weight:800;letter-spacing:-1.5px;line-height:1;margin-bottom:2px}
+.cy .c-val{color:#8A6800}.co .c-val{color:var(--o)}.cg .c-val{color:var(--ok)}.ci .c-val{color:var(--info)}
+.c-sub{font-size:10px;color:var(--tx3)}
+
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;gap:7px;margin-bottom:11px;flex-wrap:wrap}
+.tl{display:flex;align-items:center;gap:6px;flex:1;flex-wrap:wrap}
+.tr{display:flex;align-items:center;gap:6px}
+.sw{position:relative}.sw svg{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--tx3);pointer-events:none}
+.si{width:100%;min-width:150px;max-width:240px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:6px 10px 6px 28px;color:var(--tx);font-size:12px;font-family:var(--fb);outline:none;transition:border-color .15s}
+.si:focus{border-color:var(--o)}.si::placeholder{color:var(--tx3)}
+select.fs{-webkit-appearance:none;appearance:none;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:6px 22px 6px 9px;color:var(--tx2);font-size:11.5px;font-family:var(--fb);outline:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23A89070' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;transition:border-color .15s;white-space:nowrap}
+select.fs:focus{border-color:var(--o)}
+select.fs:disabled { opacity: 0.5; cursor: not-allowed; background-image: none; }
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--r);font-size:12.5px;font-weight:600;font-family:var(--fb);cursor:pointer;transition:all .15s;border:none;white-space:nowrap}
+.btn-p{background:linear-gradient(135deg,var(--y),var(--o));color:var(--tx)}.btn-p:hover{filter:brightness(1.06);box-shadow:0 2px 8px rgba(244,123,32,.28)}
+.btn-g{background:var(--s1);border:1px solid var(--bd);color:var(--tx2)}.btn-g:hover{border-color:var(--bd2);color:var(--tx)}
+
+/* TABLE */
+.twrap{background:var(--s1);border:1px solid var(--bd);border-radius:var(--rl);overflow:visible}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:var(--s2);padding:8px 10px;text-align:left;font-size:9.5px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--bd);white-space:nowrap;position:sticky;top:0;z-index:5}
+tbody tr.pr{border-bottom:1px solid var(--bd);transition:background .1s}
+tbody tr.pr:hover{background:var(--s2)}.pr.exp{background:var(--s2)}
+td{padding:8px 10px;vertical-align:middle}td.m{color:var(--tx2)}
+
+/* EXPAND */
+.xb{width:23px;height:23px;border-radius:5px;border:1px solid var(--bd);background:var(--s2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;color:var(--tx3)}
+.xb:hover{border-color:var(--o);color:var(--o);background:#FFF5E8}
+.xb svg{transition:transform .22s}.xb.open svg{transform:rotate(90deg)}
+
+/* SUB ROW */
+tr.sr{display:none}tr.sr.vis{display:table-row}
+tr.sr>td{background:var(--s3);border-bottom:1px solid var(--bd);padding:0;animation:sdn .2s ease}
+@keyframes sdn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.swrap{padding:9px 11px 11px 46px}
+.shd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.slbl{font-size:9.5px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.6px;font-family:var(--fh)}
+table.st{width:100%;border-collapse:collapse;background:var(--s1);border-radius:var(--r);border:1px solid var(--bd)}
+table.st thead th{background:var(--s2);font-size:9.5px;padding:6px 9px;border-bottom:1px solid var(--bd);position:static}
+table.st td{padding:6px 9px;font-size:11.5px;color:var(--tx2);border-bottom:1px solid var(--bd)}
+table.st tbody tr:last-child td{border-bottom:none}
+table.st tbody tr:hover td{background:var(--s2);color:var(--tx)}
+
+/* EDITABLE CELLS */
+.edc{display:inline-flex;align-items:center;gap:4px;cursor:pointer;border-radius:5px;padding:1px 4px;margin:-1px -4px;transition:background .12s;max-width:150px}
+.edc:hover{background:var(--s2)}.edc:hover .eh{opacity:1}.eh{opacity:0;transition:opacity .12s;color:var(--tx3);flex-shrink:0}
+.edc span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px}
+.iinp{background:var(--s1);border:1.5px solid var(--bd);border-radius:5px;padding:4px 7px;font-size:12px;font-family:var(--fb);color:var(--tx);outline:none;width:140px; transition:border-color .15s}
+.iinp:focus{border-color:var(--o); box-shadow:0 0 0 3px rgba(244,123,32,.1)}
+.iinp:disabled { opacity: 0.5; cursor: not-allowed; background: var(--s2); border-color: transparent;}
+input[type="date"].iinp{width:auto;min-width:110px}
+
+/* BADGES — PROGRESS */
+.pb{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;font-family:var(--fb)}
+.dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;display:inline-block}
+.pnpb{background:#EBEBEB;color:#555}.pnpb .dot{background:#888}
+.ppr{background:#FFF3CC;color:#8A6800}.ppr .dot{background:#C49A00}
+.pseb{background:#D8E8D2;color:#3A5830}.pseb .dot{background:#4A6741}
+.pmrc{background:#D6F5E8;color:#0F6A40}.pmrc .dot{background:#0F6A40}
+.pser{background:#DCEEFF;color:#1740A0}.pser .dot{background:#1D4ED8}
+
+/* BADGES — VENDOR */
+.vbadge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;font-family:var(--fb)}
+
+/* FINANCE */
+.fb_{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600}
+.fl_{background:#D6F5E8;color:#0F6A40}.fp_{background:#FFF3CC;color:#8A6800}.fn_{color:var(--tx3);font-size:12px}
+
+.nval{color:var(--ok);font-weight:600;font-variant-numeric:tabular-nums;font-size:12px}
+.nnil{color:var(--tx3);font-size:12px}
+
+/* ICON BUTTONS */
+.ib{width:25px;height:25px;border-radius:5px;border:1px solid var(--bd);background:var(--s1);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;color:var(--tx2);flex-shrink:0}
+.ib:hover{border-color:var(--bd2);color:var(--tx);background:var(--s2)}
+.ib.del:hover{border-color:rgba(226,35,26,.4);color:var(--red);background:rgba(226,35,26,.06)}
+.ib.det:hover{border-color:rgba(29,78,216,.4);color:var(--info);background:rgba(29,78,216,.06)}
+.acell{display:flex;align-items:center;gap:3px}
+
+/* SHARED POPUP DROPDOWN */
+.ddpop{position:fixed;background:var(--s1);border:1px solid var(--bd);border-radius:var(--rl);box-shadow:0 8px 32px rgba(100,70,20,.16);z-index:9000;min-width:190px;max-height:280px;overflow-y:auto;opacity:0;pointer-events:none;transform:translateY(-4px) scale(.97);transition:opacity .15s,transform .15s}
+.ddpop.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+.ddo{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;font-size:12.5px;font-family:var(--fb);color:var(--tx2);transition:background .1s;white-space:nowrap}
+.ddo:hover{background:var(--s2);color:var(--tx)}
+.ddo.sel{font-weight:600;color:var(--o)}.ddo.sel::after{content:'✓';margin-left:auto;font-size:10px;color:var(--o)}
+.ddo.add-oth{color:var(--o);font-weight:600;border-top:1px solid var(--bd)}
+.ddsep{height:1px;background:var(--bd);margin:3px 0}
+.dd-addrow{padding:8px 12px;display:none;border-top:1px solid var(--bd)}
+.dd-addrow.show{display:block}
+.dd-addrow input{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:5px 8px;font-size:12px;font-family:var(--fb);color:var(--tx);outline:none;margin-bottom:5px}
+.dd-addrow input:focus{border-color:var(--o)}
+.dd-color-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.dd-color-row label{font-size:10.5px;color:var(--tx3)}
+.dd-color-row input[type=color]{width:32px;height:24px;border:1px solid var(--bd);border-radius:4px;cursor:pointer;padding:0;background:none}
+.dd-addrow-btns{display:flex;justify-content:flex-end}
+.dd-addbtn{padding:4px 10px;border-radius:5px;background:var(--o);color:#fff;border:none;font-size:11.5px;font-weight:600;cursor:pointer;font-family:var(--fb)}
+
+/* TABLE FOOTER */
+.tft{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-top:1px solid var(--bd);color:var(--tx3);font-size:11.5px}
+.pgn{display:flex;gap:3px}
+.pgb{min-width:26px;height:26px;border-radius:5px;border:1px solid var(--bd);background:transparent;color:var(--tx2);font-size:11.5px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--fb);transition:all .15s;padding:0 5px}
+.pgb:hover{border-color:var(--bd2);color:var(--tx)}
+.pgb.act{background:linear-gradient(135deg,var(--y),var(--o));border-color:transparent;color:var(--tx);font-weight:700}
+
+/* EMPTY */
+.empty{text-align:center;padding:44px 20px;color:var(--tx3)}.ei{font-size:30px;margin-bottom:9px;opacity:.4}
+
+/* ══ MODAL ══ */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:500;align-items:center;justify-content:center;padding:20px}
+.ov.show{display:flex}
+.modal{width:100%;max-width:630px;max-height:92vh;background:var(--s1);border:1px solid var(--bd);border-radius:var(--rl);display:flex;flex-direction:column;animation:pin .2s cubic-bezier(.34,1.56,.64,1);overflow:hidden;box-shadow:0 16px 56px rgba(100,70,20,.18)}
+@keyframes pin{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.mhd{padding:14px 18px 12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.mtl{font-family:var(--fh);font-size:14px;font-weight:700;color:var(--tx)}
+.mcl{width:26px;height:26px;border-radius:6px;border:none;background:var(--s2);color:var(--tx2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s}
+.mcl:hover{background:rgba(226,35,26,.12);color:var(--red)}
+.mb{padding:14px 18px;overflow-y:auto;flex:1}
+.mf{padding:11px 18px;border-top:1px solid var(--bd);display:flex;gap:7px;justify-content:flex-end;flex-shrink:0}
+
+/* FORM */
+.fsec{margin-bottom:18px}
+.fst{font-family:var(--fh);font-size:9.5px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.fg{display:flex;flex-direction:column;gap:3px}.fg.full{grid-column:1/-1}
+label.fl{font-size:9.5px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;font-family:var(--fb)}
+input.fi,select.fsel,textarea.fta{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:7px 9px;color:var(--tx);font-size:13px;font-family:var(--fb);outline:none;transition:border-color .15s;width:100%}
+input.fi:focus,select.fsel:focus,textarea.fta:focus{border-color:var(--o)}
+input.fi::placeholder,textarea.fta::placeholder{color:var(--tx3)}
+input.fi:disabled,select.fsel:disabled,textarea.fta:disabled{opacity:.35;cursor:not-allowed;background:var(--s3)}
+textarea.fta{resize:vertical;min-height:58px}
+select.fsel{-webkit-appearance:none;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23A89070' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:26px}
+select.fsel:disabled{background-image:none}
+
+/* sub-item form */
+.sil{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.sic{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:10px}
+.sihd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sinum{font-size:9.5px;font-weight:700;color:var(--o);background:rgba(244,123,32,.1);padding:2px 7px;border-radius:20px;font-family:var(--fh)}
+.sidel{width:21px;height:21px;border-radius:4px;border:none;background:rgba(226,35,26,.1);color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;transition:all .15s}
+.sidel:hover{background:rgba(226,35,26,.22)}
+.sig2{display:grid;grid-template-columns:1fr 78px;gap:7px;margin-bottom:7px}
+.sig2b{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.add-si{width:100%;padding:7px;border-radius:var(--r);border:1.5px dashed var(--bd2);background:transparent;color:var(--o);font-size:11.5px;font-weight:600;font-family:var(--fb);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .15s}
+.add-si:hover{border-color:var(--o);background:rgba(244,123,32,.05)}
+
+/* FORM DROPDOWN (.fdd) */
+.fdd{position:relative}
+.fdd-btn{display:flex;align-items:center;justify-content:space-between;gap:6px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:7px 9px;cursor:pointer;transition:border-color .15s;user-select:none;min-height:38px}
+.fdd-btn:hover{border-color:var(--bd2)}
+.fdd.open .fdd-btn{border-color:var(--o);box-shadow:0 0 0 2px rgba(244,123,32,.12)}
+.fdd-btn svg{flex-shrink:0;color:var(--tx3);transition:transform .18s}
+.fdd.open .fdd-btn svg{transform:rotate(180deg)}
+.fdd.locked{opacity:.4;pointer-events:none}
+.fdd-menu{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--s1);border:1px solid var(--bd);border-radius:var(--rl);box-shadow:0 8px 28px rgba(100,70,20,.18);z-index:50;max-height:240px;overflow-y:auto;display:none}
+.fdd.open .fdd-menu{display:block;animation:fdi .14s ease}
+.fdd-opt{display:flex;align-items:center;gap:8px;padding:8px 11px;cursor:pointer;font-size:12.5px;color:var(--tx2);transition:background .1s}
+.fdd-opt:hover{background:var(--s2);color:var(--tx)}
+.fdd-opt.sel{font-weight:600;color:var(--o)}.fdd-opt.sel::after{content:'✓';margin-left:auto;font-size:10px;color:var(--o)}
+.fdd-opt.add{color:var(--o);font-weight:600;border-top:1px solid var(--bd)}
+.fdd-addrow{padding:8px 11px;border-top:1px solid var(--bd);display:none}
+.fdd-addrow.show{display:block}
+.fdd-addrow input[type=text]{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:6px 8px;font-size:12px;font-family:var(--fb);color:var(--tx);outline:none;margin-bottom:6px}
+.fdd-addrow input[type=text]:focus{border-color:var(--o)}
+.fdd-colorrow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.fdd-colorrow label{font-size:10.5px;color:var(--tx3)}
+.fdd-colorrow input[type=color]{width:32px;height:24px;border:1px solid var(--bd);border-radius:4px;cursor:pointer;padding:0;background:none}
+.fdd-addrow-btns{display:flex;justify-content:flex-end}
+.dd-addbtn{padding:4px 10px;border-radius:5px;background:var(--o);color:#fff;border:none;font-size:11.5px;font-weight:600;cursor:pointer;font-family:var(--fb)}
+
+/* EDITABLE VENDOR BUTTONS */
+.vd-btn {width: 22px; height: 22px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--tx3); transition: all .15s; background: transparent; border: none;}
+.vd-btn:hover {background: var(--s2); color: var(--tx);}
+.vd-btn.del:hover {background: rgba(226,35,26,.12); color: var(--red);}
+.vend-acts {opacity: 0; transition: opacity .15s; display: flex; gap: 2px;}
+.fdd-opt:hover .vend-acts {opacity: 1;}
+
+/* ROLE BANNER */
+.rbanner{background:rgba(251,184,15,.1);border:1px solid rgba(251,184,15,.3);border-radius:var(--r);padding:6px 12px;font-size:11px;color:#8A6500;margin-bottom:13px;display:flex;align-items:center;gap:6px}
+
+/* CONFIRM & TOAST */
+.cbox{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35)}
+.cbox.show{display:flex}
+.ccard{background:var(--s1);border:1px solid var(--bd);border-radius:var(--rl);padding:20px 22px;width:320px;box-shadow:0 12px 40px rgba(100,70,20,.18);animation:pin .18s ease}
+.ctitle{font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:6px}
+.cbody{font-size:12px;color:var(--tx2);margin-bottom:16px;line-height:1.6}
+.cbtns{display:flex;gap:7px;justify-content:flex-end}
+.mrow{display:flex;gap:7px;align-items:center;margin-top:9px}
+.mrow select{flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:7px 9px;font-size:13px;font-family:var(--fb);outline:none;color:var(--tx);cursor:pointer}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--tx);border-radius:var(--r);padding:7px 15px;font-size:12.5px;color:#FFF8EE;z-index:99999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:7px;box-shadow:0 5px 20px rgba(50,30,10,.25);pointer-events:none}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:860px){.cards{grid-template-columns:repeat(2,1fr)}.sb{display:none}.modal{max-width:100%}.fg2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="logo">
+    <div class="logo-mark">🖨</div>Baba Rafi
+    <div class="tab-sw">
+      <button class="t-btn active" id="tab-btn-print" onclick="switchTab('print')">Print Tracker</button>
+      <button class="t-btn" id="tab-btn-pay" onclick="switchTab('pay')">Payment Tracker</button>
+    </div>
+  </div>
+  <div class="nav-r">
+    <div class="role-sw">
+      <button class="ro active" id="rmc" onclick="switchRole('marcom')">Marcom</button>
+      <button class="ro" id="rkm" onclick="switchRole('komersil')">Komersil</button>
+    </div>
+    <div class="av" id="av-init">MC</div>
+  </div>
+</nav>
+
+<div class="bwrap">
+  <div class="sb">
+    <div class="sb-hd">
+      <div class="sb-hdtitle">Periode Bulan</div>
+      <button class="sb-add" id="sb-add-btn" onclick="openAddMonth()">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Tambahkan Bulan
+      </button>
+    </div>
+    <div class="sb-list" id="sb-list"></div>
+  </div>
+
+  <div class="ct">
+    
+    <div id="tab-print" class="tab-content active-tab">
+      <div class="cards">
+        <div class="card cy"><div class="c-label">Total Request</div><div class="c-val" id="s-tot">0</div><div class="c-sub" id="s-tot-sub">Juni 2026</div></div>
+        <div class="card co"><div class="c-label">On Progress</div><div class="c-val" id="s-prg">0</div><div class="c-sub">Sedang dikerjakan</div></div>
+        <div class="card cg"><div class="c-label">Selesai</div><div class="c-val" id="s-don">0</div><div class="c-sub">Sudah diserahkan</div></div>
+        <div class="card ci"><div class="c-label">Total Nominal</div><div class="c-val" id="s-nom" style="font-size:15px;letter-spacing:-.2px;padding-top:5px">—</div><div class="c-sub" id="s-nom-sub">Juni 2026</div></div>
+      </div>
+
+      <div class="toolbar">
+        <div class="tl">
+          <div class="sw">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" class="si" id="q" placeholder="Cari permintaan…">
+          </div>
+          <select class="fs" id="f-outlet"><option value="">Semua Depo</option></select>
+          <select class="fs" id="f-div"><option value="">Semua Divisi</option></select>
+          <select class="fs" id="f-vend"><option value="">Semua Vendor</option></select>
+          <select class="fs" id="f-prog">
+            <option value="">Semua Status</option>
+            <option>NPB Diterima</option><option>Progress Printing</option>
+            <option>Sebagian Selesai</option><option>Sudah di Marcomm</option><option>Sudah Diserahkan</option>
+          </select>
+          <select class="fs" id="f-fin"><option value="">Semua Finance</option><option>Proses Pengajuan</option><option>Lunas</option></select>
+        </div>
+        <div class="tr">
+          <button class="btn btn-g" onclick="doExport()">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export CSV
+          </button>
+          <button class="btn btn-p" onclick="openNew()">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Request Baru
+          </button>
+        </div>
+      </div>
+
+      <div class="twrap">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th onclick="sortBy('sentDate')" style="cursor:pointer">Tgl NPB ↕</th>
+              <th onclick="sortBy('title')" style="cursor:pointer">Permintaan ↕</th>
+              <th>Outlet / Depo</th>
+              <th>Divisi</th>
+              <th>Vendor</th>
+              <th>Tgl Cetak</th>
+              <th>Progress</th>
+              <th>Invoice</th>
+              <th>Nominal</th>
+              <th>Finance</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="empty" id="empty" style="display:none"><div class="ei">📋</div><div>Tidak ada data yang cocok</div></div>
+        <div class="tft"><div id="rcount">— request</div><div class="pgn" id="pgn"></div></div>
+      </div>
+    </div>
+    
+    <div id="tab-pay" class="tab-content">
+      <div class="cards" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="card cy"><div class="c-label">Total Tagihan</div><div class="c-val" id="p-tot">0</div></div>
+        <div class="card ci"><div class="c-label">Total Nominal</div><div class="c-val" style="font-size:22px;letter-spacing:-1px" id="p-nom">0</div></div>
+        <div class="card cg">
+          <div class="c-label" id="p-lunas-label">Nominal Lunas</div>
+          <div class="c-val" style="font-size:22px;letter-spacing:-1px;color:var(--ok)" id="p-lunas">0</div>
+        </div>
+        <div class="card co"><div class="c-label">Nominal Belum Lunas</div><div class="c-val" style="font-size:22px;letter-spacing:-1px;color:var(--red)" id="p-belum">0</div></div>
+      </div>
+
+      <div class="toolbar" style="margin-bottom:14px; justify-content:space-between">
+        <div class="tl">
+          <label style="font-size:12px;font-weight:600;color:var(--tx2);margin-right:4px">Filter Tagihan:</label>
+          <select class="fs" id="p-vend" onchange="renderPay()" style="min-width:140px;border-color:var(--bd2)">
+            <option value="">Semua Vendor</option>
+          </select>
+          <select class="fs" id="p-stat" onchange="renderPay()" style="min-width:140px">
+            <option value="">Semua Status</option>
+            <option value="Lunas">Sudah Ditransfer (Lunas)</option>
+            <option value="Proses Pengajuan">Belum Ditransfer</option>
+          </select>
+        </div>
+        <div class="tr">
+          <button class="btn btn-p" onclick="exportJPG()" style="background:linear-gradient(135deg,var(--info),#0F3EBA);color:#fff">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export JPG
+          </button>
+        </div>
+      </div>
+
+      <div class="twrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Permintaan</th>
+              <th>Vendor</th>
+              <th>Tgl Nota / Cetak</th>
+              <th>Invoice</th>
+              <th>Potongan Pajak</th>
+              <th>Nominal</th>
+              <th>Status Finance</th>
+              <th>Tgl Ditransfer</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-pay"></tbody>
+        </table>
+        <div class="empty" id="empty-pay" style="display:none"><div class="ei">💸</div><div>Tidak ada data tagihan</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="ov" id="ov-new">
+ <div class="modal">
+  <div class="mhd"><div class="mtl" id="mnew-t">Request Baru</div><button class="mcl" onclick="closeNew()">✕</button></div>
+  <div class="mb">
+    <div id="rbanner" class="rbanner" style="display:none">🔒 Mode Komersil — hanya field yang tersedia dapat diisi</div>
+    <div class="fsec">
+      <div class="fst">Data NPB</div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Tgl Kirim NPB *</label><input type="date" class="fi" id="e-sent"></div>
+        <div class="fg"><label class="fl">Tgl NPB Diterima</label><input type="date" class="fi" id="e-recv" data-mc="1"></div>
+        <div class="fg full"><label class="fl">Nama Permintaan *</label><input type="text" class="fi" id="e-title" placeholder="cth: Branding Outlet SPBU Jenggolo Sidoarjo..."></div>
+        <div class="fg full"><label class="fl">Outlet / Depo *</label><input type="text" class="fi" id="e-outlet" placeholder="Ketik nama outlet atau depo…"></div>
+        <div class="fg">
+          <label class="fl">Divisi</label>
+          <div class="fdd" id="fdd-div"></div>
+        </div>
+        <div class="fg">
+          <label class="fl">Vendor</label>
+          <div class="fdd" id="fdd-vend"></div>
+        </div>
+        <div class="fg"><label class="fl">Tgl Masuk Cetak (Nota)</label><input type="date" class="fi" id="e-pdate" data-mc="1"></div>
+        <div class="fg full"><label class="fl">Project Trello URL</label><input type="url" class="fi" id="e-trello" data-mc="1" placeholder="https://trello.com/c/…"></div>
+      </div>
+    </div>
+
+    <div class="fsec">
+      <div class="fst">Sub-Item Cetakan</div>
+      <div class="sil" id="si-list"></div>
+      <button class="add-si" onclick="addSI()">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Tambah Sub-Item
+      </button>
+    </div>
+
+    <div class="fsec" id="fsec-fin">
+      <div class="fst">Status &amp; Finance</div>
+      <div class="fg2">
+        <div class="fg">
+          <label class="fl">Progress</label>
+          <select class="fsel" id="e-prog" data-mc="1">
+            <option value="">— Pilih —</option>
+            <option>NPB Diterima</option><option>Progress Printing</option>
+            <option>Sebagian Selesai</option><option>Sudah di Marcomm</option><option>Sudah Diserahkan</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Finance</label>
+          <select class="fsel" id="e-fin" data-mc="1">
+            <option value="">— Pilih —</option>
+            <option>Proses Pengajuan</option><option>Lunas</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">No. Invoice</label><input type="text" class="fi" id="e-inv" data-mc="1" placeholder="INV-2026-…"></div>
+        <div class="fg"><label class="fl">Nominal (Rp)</label><input type="text" class="fi" id="e-nom" data-mc="1" placeholder="0" oninput="fmtNom(this)"></div>
+        <div class="fg full"><label class="fl">Catatan</label><textarea class="fta" id="e-notes" data-mc="1" placeholder="Catatan tambahan…"></textarea></div>
+      </div>
+    </div>
+  </div>
+  <div class="mf">
+    <button class="btn btn-g" onclick="closeNew()">Batal</button>
+    <button class="btn btn-p" onclick="saveReq()">Simpan</button>
+  </div>
+ </div>
+</div>
+
+<div class="ov" id="ov-det" onclick="if(event.target===this)closeDet()">
+ <div class="modal" style="max-width:560px">
+  <div class="mhd"><div class="mtl" id="det-t">Detail</div><button class="mcl" onclick="closeDet()">✕</button></div>
+  <div class="mb" id="det-body"></div>
+  <div class="mf">
+    <button class="btn btn-g" onclick="closeDet()">Tutup</button>
+    <button class="btn btn-p" id="det-edit" style="display:none">Edit Request</button>
+  </div>
+ </div>
+</div>
+
+<div class="ov" id="ov-month" onclick="if(event.target===this)document.getElementById('ov-month').classList.remove('show')">
+ <div class="modal" style="max-width:360px">
+  <div class="mhd"><div class="mtl">Tambahkan Bulan</div><button class="mcl" onclick="document.getElementById('ov-month').classList.remove('show')">✕</button></div>
+  <div class="mb">
+    <p style="color:var(--tx2);font-size:12.5px;line-height:1.6">Pilih bulan dan tahun yang ingin ditambahkan ke daftar periode.</p>
+    <div class="mrow">
+      <select id="add-m"><option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option><option value="4">April</option><option value="5">Mei</option><option value="6" selected>Juni</option><option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select>
+      <select id="add-y"></select>
+    </div>
+  </div>
+  <div class="mf">
+    <button class="btn btn-g" onclick="document.getElementById('ov-month').classList.remove('show')">Batal</button>
+    <button class="btn btn-p" onclick="doAddMonth()">Tambahkan</button>
+  </div>
+ </div>
+</div>
+
+<div class="cbox" id="cbox">
+  <div class="ccard">
+    <div class="ctitle" id="ctxt-t">Hapus Request?</div>
+    <div class="cbody" id="cmsg"></div>
+    <div class="cbtns">
+      <button class="btn btn-g" onclick="closeCfm()">Batal</button>
+      <button class="btn" style="background:var(--red);color:#fff" onclick="doDelete()">Hapus</button>
+    </div>
+  </div>
+</div>
+<div class="cbox" id="cbox-m">
+  <div class="ccard">
+    <div class="ctitle">Hapus Periode?</div>
+    <div class="cbody" id="cmsg-m"></div>
+    <div class="cbtns">
+      <button class="btn btn-g" onclick="document.getElementById('cbox-m').classList.remove('show')">Batal</button>
+      <button class="btn" style="background:var(--red);color:#fff" onclick="doDeleteMonth()">Hapus</button>
+    </div>
+  </div>
+</div>
+<div class="ddpop" id="ddpop"></div>
+<div id="toast"><span id="tmsg">✅ Tersimpan</span></div>
+
+<div id="print-area" style="position:fixed;top:0;left:-9999px;width:800px;background:#EFE9DE;color:#1C1510;padding:30px;font-family:'Inter',sans-serif;box-sizing:border-box;z-index:-10">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+    <div style="width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,#FBB80F,#F47B20);display:flex;align-items:center;justify-content:center;font-size:16px">🖨</div>
+    <div>
+      <h2 style="margin:0;font-size:20px;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-0.5px">Rekap Tagihan Vendor</h2>
+      <div id="pa-vend" style="font-size:13px;color:#7A6040;font-weight:500;margin-top:2px"></div>
+    </div>
+  </div>
+
+  <div style="background:#FFFFFF;border:1px solid #E0D5BF;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(160,120,50,0.05)">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;text-align:left;">
+      <thead>
+        <tr style="background:#FAF6EF;border-bottom:1px solid #E0D5BF;">
+          <th style="padding:10px 12px;font-size:10px;font-weight:600;color:#A89070;text-transform:uppercase;letter-spacing:0.5px">Permintaan</th>
+          <th style="padding:10px 12px;font-size:10px;font-weight:600;color:#A89070;text-transform:uppercase;letter-spacing:0.5px">Tgl Nota</th>
+          <th style="padding:10px 12px;font-size:10px;font-weight:600;color:#A89070;text-transform:uppercase;letter-spacing:0.5px">Invoice</th>
+          <th style="padding:10px 12px;font-size:10px;font-weight:600;color:#A89070;text-transform:uppercase;letter-spacing:0.5px">Status</th>
+          <th style="padding:10px 12px;font-size:10px;font-weight:600;color:#A89070;text-transform:uppercase;letter-spacing:0.5px;text-align:right">Nominal (Net)</th>
+        </tr>
+      </thead>
+      <tbody id="pa-body"></tbody>
+    </table>
+    <div style="background:#FAF6EF;border-top:1px solid #E0D5BF;padding:12px;display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:600;color:#E2231A">
+        <span>BELUM DITRANSFER</span><span id="pa-belum"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:600;color:#1E7A46">
+        <span>SUDAH DITRANSFER (LUNAS)</span><span id="pa-lunas"></span>
+      </div>
+      <div style="border-top:1px dashed #C4B090;padding-top:10px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12px;font-weight:600;color:#7A6040">TOTAL KESELURUHAN</span>
+        <span id="pa-tot" style="font-size:16px;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;color:#1C1510"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   HELPERS & DATA
+════════════════════════════════════════ */
+const MN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+function fmtDateID(d){ if(!d) return '—'; const[y,m,dd]=d.split('-'); return `${parseInt(dd)} ${MN[parseInt(m)-1]} ${y}`; }
+function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function hexToRgba(hex,a){ const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); return `rgba(${r},${g},${b},${a})`; }
+
+const VEND_COLORS = {'Harvest':{bg:'#EDE8FF',tx:'#5B33C2'},'Imperial':{bg:'#DDEEFF',tx:'#1455A4'},'Aneka':{bg:'#FFF8CC',tx:'#857000'}};
+function vendBadgeHTML(v){ if(!v) return `<span style="color:var(--tx3)">—</span>`; const c=VEND_COLORS[v]; return c?`<span class="vbadge" style="background:${c.bg};color:${c.tx}">${v}</span>`:`<span class="vbadge" style="background:#F0F0F0;color:#555">${v}</span>`; }
+
+const PROG_OPTS=['NPB Diterima','Progress Printing','Sebagian Selesai','Sudah di Marcomm','Sudah Diserahkan'];
+const PROG_CSS={'NPB Diterima':'pnpb','Progress Printing':'ppr','Sebagian Selesai':'pseb','Sudah di Marcomm':'pmrc','Sudah Diserahkan':'pser'};
+function progBadge(p){ return `<span class="pb ${PROG_CSS[p]||'pnpb'}"><span class="dot"></span>${p||'—'}</span>`; }
+
+const FIN_OPTS=['Proses Pengajuan','Lunas'];
+function finBadge(f){ if(!f) return `<span class="fn_">—</span>`; if(f==='Lunas') return `<span class="fb_ fl_">✓ Lunas</span>`; return `<span class="fb_ fp_">${f}</span>`; }
+
+let role='marcom', divList=['Commercial','Marketing','Ngikan'], vendList=['Harvest','Imperial','Aneka'];
+let months=[{key:'2026-06',label:'Juni 2026'}], activeMonth='2026-06';
+let editId=null, siItems=[], expanded=new Set(), sortCfg={f:'sentDate',d:-1}, pg=1, delId=null, delMonthKey=null;
+const PER=10;
+
+let data=[
+  {id:1,sentDate:'2026-06-12',recvDate:'2026-06-13',title:'Branding Opening Depo Surabaya Timur',outlet:'Depo Surabaya Timur',trello:'',division:'Commercial',vendor:'Imperial',printDate:'2026-06-15',progress:'Progress Printing',invoice:'INV-IMP-001',nominal:'5000000',financeStatus:'Proses Pengajuan',taxRate:2,transferDate:'',notes:'',
+    items:[{name:'Neon Box Fascia',qty:'2 pcs',size:'120×60 cm',progress:'Progress Printing'}]},
+  {id:2,sentDate:'2026-06-10',recvDate:'2026-06-11',title:'Rebranding Identitas Visual Q3 2026',outlet:'HO Jakarta',trello:'',division:'Marketing',vendor:'Harvest',printDate:'2026-06-12',progress:'Sudah Diserahkan',invoice:'INV-2026-0831',nominal:'8750000',financeStatus:'Lunas',taxRate:2.5,transferDate:'2026-06-25',notes:'',
+    items:[{name:'Poster A1',qty:'20 pcs',size:'60×84 cm',progress:'Sudah Diserahkan'}]},
+  {id:3,sentDate:'2026-06-08',recvDate:'2026-06-09',title:'Kit Display Counter Promo Akhir Tahun',outlet:'Depo Malang',trello:'',division:'Commercial',vendor:'Aneka',printDate:'2026-06-10',progress:'Sebagian Selesai',invoice:'INV-2026-0822',nominal:'3200000',financeStatus:'Proses Pengajuan',taxRate:0,transferDate:'',notes:'',
+    items:[{name:'Wobbler',qty:'50 pcs',size:'10×15 cm',progress:'Sudah di Marcomm'}]},
+];
+
+let fpState={div:'',vend:''}, fddOpen={div:false,vend:false}, fddAddOpen={div:false,vend:false}, fddEditVend=null;
+
+/* ════════════════════════════════════════
+   TAB NAVIGATION
+════════════════════════════════════════ */
+function switchTab(t){
+  document.getElementById('tab-print').classList.toggle('active-tab', t === 'print');
+  document.getElementById('tab-pay').classList.toggle('active-tab', t === 'pay');
+  document.getElementById('tab-btn-print').classList.toggle('active', t === 'print');
+  document.getElementById('tab-btn-pay').classList.toggle('active', t === 'pay');
+  if(t === 'pay') renderPay();
+}
+
+/* ════════════════════════════════════════
+   INLINE POPUP & FILTERS
+════════════════════════════════════════ */
+let activePop=null;
+function openPop(tid,rowId,field,opts,allowAdd,listName,subIdx){
+  if(activePop&&activePop.tid===tid){closePop();return;} closePop();
+  const trig=document.getElementById(tid), pop=document.getElementById('ddpop'); if(!trig)return;
+  const rect=trig.getBoundingClientRect(), r=data.find(x=>x.id===rowId);
+  let cur=r?(subIdx>=0&&r.items[subIdx]?r.items[subIdx][field]||'':r[field]||''):'';
+  let html=!allowAdd?`<div class="ddo${!cur?' sel':''}" onclick="pickPop(${rowId},'${field}','',${subIdx??-1})">—</div>`:'';
+  opts.forEach(o=>{
+    let lab=field.includes('progress')?progBadge(o):field==='financeStatus'?finBadge(o):field==='vendor'?vendBadgeHTML(o):o;
+    html+=`<div class="ddo${o===cur?' sel':''}" onclick="pickPop(${rowId},'${field}','${o.replace(/'/g,"\\'")}',${subIdx??-1})">${lab}</div>`;
+  });
+  if(allowAdd){
+    let isV=listName==='vendList';
+    html+=`<div class="ddsep"></div><div class="ddo add-oth" onclick="document.getElementById('pop-addrow').classList.add('show');setTimeout(()=>document.getElementById('pop-addinp').focus(),50)">+ Tambahkan Lainnya…</div>
+    <div class="dd-addrow" id="pop-addrow"><input type="text" id="pop-addinp" placeholder="Nama baru…" onclick="event.stopPropagation()">
+    ${isV?`<div class="dd-color-row"><label>Warna:</label><input type="color" id="pop-addcolor" value="#6B7280" onclick="event.stopPropagation()"></div>`:''}
+    <div class="dd-addrow-btns"><button class="dd-addbtn" onclick="commitPopAdd(${rowId},'${field}','${listName}',${subIdx??-1},${isV})">Tambah</button></div></div>`;
+  }
+  pop.innerHTML=html;
+  let left=rect.left, top=rect.bottom+4;
+  if(left+200>window.innerWidth-8) left=window.innerWidth-200-8;
+  if(top+300>window.innerHeight) top=rect.top-305;
+  pop.style.cssText=`left:${left}px;top:${top}px;min-width:200px`;
+  pop.classList.add('open'); trig.classList.add('open');
+  activePop={tid,rowId,field,subIdx:subIdx??-1};
+}
+function commitPopAdd(rowId,field,listName,subIdx,isV){
+  const v=document.getElementById('pop-addinp')?.value.trim(); if(!v){showToast('❌ Kosong');return;}
+  let list=listName==='vendList'?vendList:divList;
+  if(!list.includes(v)){list.push(v);list.sort();}
+  if(isV){VEND_COLORS[v]={bg:hexToRgba(document.getElementById('pop-addcolor').value,0.15),tx:document.getElementById('pop-addcolor').value};}
+  syncFilterSelects(); pickPop(rowId,field,v,subIdx); showToast(`✅ Disimpan`);
+}
+function pickPop(rowId,f,v,si){
+  let r=data.find(x=>x.id===rowId); if(!r)return;
+  if(si>=0) r.items[si][f]=v; else r[f]=v;
+  closePop(); render(); showToast('✅ Diperbarui');
+}
+function closePop(){ document.getElementById('ddpop').classList.remove('open'); if(activePop) document.getElementById(activePop.tid)?.classList.remove('open'); activePop=null;}
+document.addEventListener('click',e=>{if(!e.target.closest('#ddpop')&&!e.target.closest('.dd-trig'))closePop();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePop();});
+
+function syncFilterSelects(){
+  const outs=[...new Set(data.filter(r=>r.sentDate&&r.sentDate.startsWith(activeMonth)).map(r=>r.outlet).filter(Boolean))].sort();
+  const upSel=(id,opts)=>{const el=document.getElementById(id); if(!el)return; const v=el.value; el.innerHTML='<option value="">Semua '+(id==='f-outlet'?'Depo':id.includes('vend')?'Vendor':'Divisi')+'</option>'; opts.forEach(o=>{const opt=document.createElement('option');opt.value=opt.textContent=o;el.add(opt);}); el.value=v;};
+  upSel('f-outlet',outs); upSel('f-div',divList); upSel('f-vend',vendList); upSel('p-vend',vendList);
+}
+
+/* ════════════════════════════════════════
+   FORM DROPDOWN (.fdd)
+════════════════════════════════════════ */
+function renderFDD(wh){
+  const isV=wh==='vend', lst=isV?vendList:divList, val=isV?fpState.vend:fpState.div, cont=document.getElementById(isV?'fdd-vend':'fdd-div'); if(!cont)return;
+  let html=`<div class="fdd-btn" data-act="tog">${!val?'<span style="color:var(--tx3)">— Pilih —</span>':isV?vendBadgeHTML(val):`<span style="color:var(--tx)">${val}</span>`}<svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>`;
+  let opts=`<div class="fdd-opt${!val?' sel':''}" data-act="pick" data-val="">— Pilih —</div>`;
+  lst.forEach(v=>{
+    if(isV && fddEditVend===v){
+      opts+=`<div class="fdd-addrow show" style="border-top:none;background:var(--s2);margin:2px 6px;border-radius:6px;padding:8px">
+        <input type="text" class="fdd-editinp" value="${v.replace(/"/g,'&quot;')}" style="width:100%;background:var(--s1);border:1px solid var(--bd);border-radius:5px;padding:5px 7px;font-size:11.5px;outline:none;margin-bottom:6px">
+        <div class="fdd-colorrow"><label style="font-size:10px">Warna:</label><input type="color" class="fdd-editcolor" value="${(VEND_COLORS[v]?.tx)||'#6B7280'}"></div>
+        <div style="display:flex;gap:6px"><button class="fdd-addbtn" data-act="sav" data-old="${v.replace(/"/g,'&quot;')}" style="flex:1;padding:5px">Simpan</button><button class="fdd-addbtn" data-act="can" style="flex:1;padding:5px;background:var(--bd);color:var(--tx)">Batal</button></div></div>`;
+    }else{
+      opts+=`<div class="fdd-opt${v===val?' sel':''}" data-act="pick" data-val="${v.replace(/"/g,'&quot;')}"><div style="flex:1">${isV?vendBadgeHTML(v):v}</div>${isV?`<div class="vend-acts"><button class="vd-btn edit" data-act="ed" data-val="${v.replace(/"/g,'&quot;')}"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="vd-btn del" data-act="del" data-val="${v.replace(/"/g,'&quot;')}"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`:''}</div>`;
+    }
+  });
+  opts+=`<div class="fdd-opt add" data-act="sadd">+ Tambahkan Lainnya…</div><div class="fdd-addrow${fddAddOpen[wh]?' show':''}"><input type="text" class="fdd-addinp" placeholder="Baru...">${isV?`<div class="fdd-colorrow"><label>Warna:</label><input type="color" class="fdd-addcolor" value="#9B59B6"></div>`:''}<button class="fdd-addbtn" data-act="com">Tambah</button></div>`;
+  cont.className='fdd'+(fddOpen[wh]?' open':''); cont.innerHTML=html+`<div class="fdd-menu">${opts}</div>`;
+
+  cont.querySelector('[data-act="tog"]').onclick=e=>{e.stopPropagation(); fddOpen[wh]=!fddOpen[wh]; if(!fddOpen[wh])fddAddOpen[wh]=false; fddOpen[isV?'div':'vend']=false; fddAddOpen[isV?'div':'vend']=false; fddEditVend=null; renderFDD('div'); renderFDD('vend');};
+  cont.querySelectorAll('[data-act="pick"]').forEach(b=>b.onclick=e=>{e.stopPropagation(); if(isV)fpState.vend=b.dataset.val; else fpState.div=b.dataset.val; fddOpen[wh]=fddAddOpen[wh]=false; fddEditVend=null; renderFDD(wh);});
+  let sBtn=cont.querySelector('[data-act="sadd"]'); if(sBtn) sBtn.onclick=e=>{e.stopPropagation(); fddAddOpen[wh]=true; renderFDD(wh); setTimeout(()=>cont.querySelector('.fdd-addinp')?.focus(),30);};
+  let cBtn=cont.querySelector('[data-act="com"]'); if(cBtn) cBtn.onclick=e=>{e.stopPropagation(); let nv=cont.querySelector('.fdd-addinp')?.value.trim(); if(!nv)return; if(!lst.includes(nv)){lst.push(nv);lst.sort();} if(isV)VEND_COLORS[nv]={bg:hexToRgba(cont.querySelector('.fdd-addcolor').value,0.15),tx:cont.querySelector('.fdd-addcolor').value}; if(isV)fpState.vend=nv; else fpState.div=nv; fddOpen[wh]=fddAddOpen[wh]=false; syncFilterSelects(); renderFDD(wh);};
+  
+  if(isV){
+    cont.querySelectorAll('[data-act="ed"]').forEach(b=>b.onclick=e=>{e.stopPropagation(); fddEditVend=b.dataset.val; renderFDD(wh);});
+    cont.querySelectorAll('[data-act="del"]').forEach(b=>b.onclick=e=>{e.stopPropagation(); if(confirm('Hapus vendor?')){let v=b.dataset.val; vendList=vendList.filter(x=>x!==v); delete VEND_COLORS[v]; if(fpState.vend===v)fpState.vend=''; data.forEach(r=>{if(r.vendor===v)r.vendor='';}); fddEditVend=null; syncFilterSelects(); renderFDD(wh); render();} });
+    cont.querySelectorAll('[data-act="can"]').forEach(b=>b.onclick=e=>{e.stopPropagation(); fddEditVend=null; renderFDD(wh);});
+    cont.querySelectorAll('[data-act="sav"]').forEach(b=>b.onclick=e=>{e.stopPropagation(); let ov=b.dataset.old, nv=b.closest('.fdd-addrow').querySelector('.fdd-editinp').value.trim(), c=b.closest('.fdd-addrow').querySelector('.fdd-editcolor').value; if(!nv)return; if(nv!==ov){let i=vendList.indexOf(ov); if(i>-1)vendList[i]=nv; vendList.sort(); data.forEach(r=>{if(r.vendor===ov)r.vendor=nv;}); if(fpState.vend===ov)fpState.vend=nv;} delete VEND_COLORS[ov]; VEND_COLORS[nv]={bg:hexToRgba(c,0.15),tx:c}; fddEditVend=null; syncFilterSelects(); renderFDD(wh); render();});
+    cont.querySelectorAll('.fdd-editinp, .fdd-editcolor').forEach(el=>el.onclick=e=>e.stopPropagation());
+  }
+  cont.querySelector('.fdd-addinp')?.addEventListener('click',e=>e.stopPropagation()); cont.querySelector('.fdd-addcolor')?.addEventListener('click',e=>e.stopPropagation());
+}
+document.addEventListener('click',e=>{if(!e.target.closest('#fdd-div')&&!e.target.closest('#fdd-vend')){if(fddOpen.div||fddOpen.vend||fddEditVend!==null){fddOpen={div:false,vend:false};fddAddOpen={div:false,vend:false};fddEditVend=null;renderFDD('div');renderFDD('vend');}}});
+function setFP(f,v){if(f==='div')fpState.div=v||''; if(f==='vend')fpState.vend=v||''; renderFDD('div');renderFDD('vend');}
+
+/* ════════════════════════════════════════
+   MAIN BEHAVIOR
+════════════════════════════════════════ */
+function switchRole(r){ 
+  role=r; 
+  document.getElementById('rmc').classList.toggle('active',r==='marcom'); 
+  document.getElementById('rkm').classList.toggle('active',r==='komersil'); 
+  document.getElementById('av-init').textContent=r==='marcom'?'MC':'KM'; 
+  document.getElementById('sb-add-btn').style.display=r==='marcom'?'':'none'; 
+
+  // Komersil DILARANG akses Payment Tracker
+  if(r === 'komersil') {
+    document.getElementById('tab-btn-pay').style.display = 'none';
+    if(document.getElementById('tab-pay').classList.contains('active-tab')) {
+      switchTab('print');
+    }
+  } else {
+    document.getElementById('tab-btn-pay').style.display = '';
+  }
+
+  render(); 
+}
+
+function setMonth(k){activeMonth=k;pg=1;syncFilters();render();}
+function renderSidebar(){ document.getElementById('sb-list').innerHTML=months.map(m=>`<div class="sb-item${m.key===activeMonth?' active':''}" onclick="setMonth('${m.key}')"><div class="sb-item-l"><span class="sb-item-name">${m.label}</span><span class="sb-item-cnt">${data.filter(r=>r.sentDate?.startsWith(m.key)).length} request</span></div>${role==='marcom'?`<button class="sb-del" onclick="event.stopPropagation();delMonthKey='${m.key}';document.getElementById('cmsg-m').textContent='Hapus periode ini?';document.getElementById('cbox-m').classList.add('show')"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>`:''}</div>`).join(''); }
+function doAddMonth(){let m=document.getElementById('add-m').value, y=document.getElementById('add-y').value, k=y+'-'+m.padStart(2,'0'), l=MN[m-1]+' '+y; if(!months.find(x=>x.key===k)){months.push({key:k,label:l});months.sort((a,b)=>a.key<b.key?-1:1);showToast('✅ Ditambahkan');} document.getElementById('ov-month').classList.remove('show');setMonth(k);}
+function doDeleteMonth(){if(delMonthKey){months=months.filter(x=>x.key!==delMonthKey);if(activeMonth===delMonthKey)activeMonth=months[0]?.key||'';document.getElementById('cbox-m').classList.remove('show');delMonthKey=null;render();showToast('🗑️ Dihapus');}}
+function openAddMonth(){let s=document.getElementById('add-y');s.innerHTML='';for(let i=2024;i<=2030;i++)s.innerHTML+=`<option value="${i}"${i===2026?' selected':''}>${i}</option>`;document.getElementById('ov-month').classList.add('show');}
+
+function updateStats(){
+  let r=data.filter(x=>x.sentDate?.startsWith(activeMonth));
+  document.getElementById('s-tot').textContent=r.length; document.getElementById('s-prg').textContent=r.filter(x=>['NPB Diterima','Progress Printing','Sebagian Selesai'].includes(x.progress)).length; document.getElementById('s-don').textContent=r.filter(x=>['Sudah Diserahkan','Sudah di Marcomm'].includes(x.progress)).length; document.getElementById('s-nom').textContent='Rp '+(r.reduce((s,x)=>s+(Number(x.nominal)||0),0)).toLocaleString('id-ID');
+  
+  // Mengubah Teks label Periode berdasarkan bulan aktif
+  let ml = months.find(x => x.key === activeMonth);
+  let lbl = ml ? ml.label : 'Periode ini';
+  document.getElementById('s-tot-sub').textContent = lbl;
+  document.getElementById('s-nom-sub').textContent = lbl;
+
+  renderSidebar();
+}
+function syncFilters(){syncFilterSelects();}
+
+/* ════════════════════════════════════════
+   RENDER PRINT TRACKER TABLE
+════════════════════════════════════════ */
+function mkProgTrig(id,v,isS,ix){ if(role!=='marcom')return progBadge(v); let u=isS?`sp-${id}-${ix}`:`rp-${id}`; return `<div class="dd-trig" id="${u}" onclick="openPop('${u}',${id},'progress',[${PROG_OPTS.map(o=>`'${o}'`).join(',')}],false,null,${isS?ix:-1})" style="display:inline-flex;cursor:pointer">${progBadge(v)}<svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:var(--tx3);margin-left:3px"><path d="M6 9l6 6 6-6"/></svg></div>`; }
+function mkVendTrig(id,v){ if(role!=='marcom')return vendBadgeHTML(v); let u=`vd-${id}`; return `<div class="dd-trig" id="${u}" onclick="openPop('${u}',${id},'vendor',[${vendList.map(o=>`'${o}'`).join(',')}],true,'vendList',-1)" style="display:inline-flex;cursor:pointer">${vendBadgeHTML(v)}<svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:var(--tx3);margin-left:3px"><path d="M6 9l6 6 6-6"/></svg></div>`; }
+function mkDivTrig(id,v){ if(role!=='marcom')return `<span style="color:var(--tx2)">${v||'—'}</span>`; let u=`dv-${id}`; return `<div class="dd-trig" id="${u}" onclick="openPop('${u}',${id},'division',[${divList.map(o=>`'${o}'`).join(',')}],true,'divList',-1)" style="display:inline-flex;cursor:pointer"><span style="font-size:12px;color:var(--tx2)">${v||'—'}</span><svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:var(--tx3);margin-left:3px"><path d="M6 9l6 6 6-6"/></svg></div>`; }
+function mkFinTrig(id,v){ if(role!=='marcom')return finBadge(v); let u=`fn-${id}`; return `<div class="dd-trig" id="${u}" onclick="openPop('${u}',${id},'financeStatus',[${FIN_OPTS.map(o=>`'${o}'`).join(',')}],false,null,-1)" style="display:inline-flex;cursor:pointer">${finBadge(v)}<svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:var(--tx3);margin-left:3px"><path d="M6 9l6 6 6-6"/></svg></div>`; }
+
+function mkTxt(id,f,v,ph,isN,isD){ if(role!=='marcom') return isN?(v?`<span class="nval">Rp ${Number(v).toLocaleString('id-ID')}</span>`:`<span class="nnil">—</span>`):`<span style="color:var(--tx2);font-size:12px">${isD?fmtDateID(v):(v||'—')}</span>`; let u=`tx-${id}-${f}`; let dis=isN?(v?'Rp '+Number(v).toLocaleString('id-ID'):''):isD?fmtDateID(v):(v||''); return `<div class="edc" id="${u}" onclick="startTxt('${u}',${id},'${f}',${isN},${isD})"><span class="${!v?(isN?'nnil':''):isN?'nval':''}" style="font-size:12px;color:${v?'inherit':'var(--tx3)'}">${dis||ph}</span><svg class="eh" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>`; }
+function startTxt(u,id,f,isN,isD){
+  const r=data.find(x=>x.id===id), el=document.getElementById(u); if(!r||!el)return;
+  let cur=r[f]||'', inpx=document.createElement('input'); inpx.className='iinp';
+  if(isD){inpx.type='date';inpx.value=cur;}else{inpx.type='text';inpx.value=isN?(cur?Number(cur).toLocaleString('id-ID'):''):cur;inpx.placeholder=isN?'Nominal...':'Ketik...';}
+  if(isN)inpx.oninput=()=>{let xv=inpx.value.replace(/[^0-9]/g,'');inpx.value=xv?Number(xv).toLocaleString('id-ID'):'';};
+  el.replaceWith(inpx); inpx.focus(); if(!isD)inpx.select();
+  const sav=()=>{ r[f]=isD?inpx.value:isN?inpx.value.replace(/\./g,'').replace(',',''):inpx.value.trim(); if(f==='outlet')syncFilters(); render(); showToast('✅ Tersimpan'); };
+  inpx.onblur=sav; inpx.onkeydown=e=>{if(e.key==='Enter')inpx.blur();if(e.key==='Escape'){r[f]=cur;render();}};
+}
+
+function mkPayDate(id, val) {
+  let c = role === 'marcom'; let dis = fmtDateID(val);
+  if(!c) return `<span style="color:var(--tx2);font-size:12px">${dis}</span>`;
+  let u = `ptx-${id}`;
+  return `<div class="edc" id="${u}" onclick="startPayDate('${u}',${id},'${val||''}')">
+    <span class="${!val?'nnil':''}" style="font-size:12px;color:${val?'inherit':'var(--tx3)'}">${val?dis:'Pilih tanggal'}</span>
+    <svg class="eh" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+  </div>`;
+}
+function startPayDate(u, id, cur) {
+  const r = data.find(x=>x.id===id), el=document.getElementById(u); if(!r||!el)return;
+  let inp = document.createElement('input'); inp.type='date'; inp.className='iinp'; inp.value=cur;
+  el.replaceWith(inp); inp.focus();
+  inp.onblur = () => { r.transferDate = inp.value; renderPay(); showToast('✅ Tanggal diupdate'); };
+  inp.onkeydown = e => { if(e.key==='Enter')inp.blur(); if(e.key==='Escape'){ renderPay(); }};
+}
+
+function getFiltered(){
+  let q=document.getElementById('q').value.toLowerCase(), fo=document.getElementById('f-outlet').value, fd=document.getElementById('f-div').value, fv=document.getElementById('f-vend').value, fp=document.getElementById('f-prog').value, ff=document.getElementById('f-fin').value;
+  return data.filter(r=>r.sentDate?.startsWith(activeMonth)&&(!q||r.title.toLowerCase().includes(q)||r.outlet.toLowerCase().includes(q)||r.invoice?.toLowerCase().includes(q))&&(!fo||r.outlet===fo)&&(!fd||r.division===fd)&&(!fv||r.vendor===fv)&&(!fp||r.progress===fp)&&(!ff||r.financeStatus===ff)).sort((a,b)=>(a[sortCfg.f]||'')<(b[sortCfg.f]||'')?sortCfg.d:(a[sortCfg.f]||'')>(b[sortCfg.f]||'')?-sortCfg.d:0);
+}
+function sortBy(f){sortCfg={f,d:sortCfg.f===f?-sortCfg.d:-1};render();}
+
+function render(){
+  let fil=getFiltered(), tb=document.getElementById('tbody'), maxP=Math.max(1,Math.ceil(fil.length/PER)); if(pg>maxP)pg=maxP;
+  document.getElementById('empty').style.display=fil.length?'none':'block';
+  tb.innerHTML=fil.slice((pg-1)*PER,pg*PER).map(r=>{
+    let ex=expanded.has(r.id), sHtml=r.items.map((it,i)=>`<tr><td>${i+1}</td><td style="font-weight:500;color:var(--tx)">${it.name}</td><td>${it.qty}</td><td>${it.size}</td><td>${mkProgTrig(r.id,it.progress,true,i)}</td></tr>`).join('');
+    let c=role==='marcom';
+    return `<tr class="pr${ex?' exp':''}">
+      <td><div class="xb${ex?' open':''}" onclick="event.stopPropagation();expanded.has(${r.id})?expanded.delete(${r.id}):expanded.add(${r.id});render()"><svg width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div></td>
+      <td class="m">${mkTxt(r.id,'sentDate',r.sentDate,'Pilih tanggal',false,true)}</td>
+      <td><div style="font-weight:700;font-family:var(--fh);font-size:12.5px;line-height:1.3;max-width:190px">${r.title}</div><div style="color:var(--tx3);font-size:10px">${r.items.length} sub-item</div></td>
+      <td>${mkTxt(r.id,'outlet',r.outlet,'Ketik outlet',false,false)}</td>
+      <td>${mkDivTrig(r.id,r.division)}</td>
+      <td>${mkVendTrig(r.id,r.vendor)}</td>
+      <td class="m">${mkTxt(r.id,'printDate',r.printDate,'Pilih tanggal',false,true)}</td>
+      <td>${mkProgTrig(r.id,r.progress,false,-1)}</td>
+      <td>${mkTxt(r.id,'invoice',r.invoice,'— Invoice',false,false)}</td>
+      <td>${mkTxt(r.id,'nominal',r.nominal,'— Nominal',true,false)}</td>
+      <td>${mkFinTrig(r.id,r.financeStatus)}</td>
+      <td><div class="acell">${c?`<div class="ib" onclick="openEdit(${r.id})"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="ib del" onclick="delId=${r.id};document.getElementById('cmsg').textContent='Hapus permanen?';document.getElementById('cbox').classList.add('show')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></div>`:''}<div class="ib det" onclick="openDet(${r.id})"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div></div></td>
+    </tr><tr class="sr${ex?' vis':''}"><td colspan="12"><div class="swrap"><div class="shd"><div class="slbl">Sub-Item</div>${c?`<div class="ib" onclick="openEdit(${r.id})" style="width:auto;padding:0 8px;gap:4px;font-size:11px">Edit</div>`:''}</div><table class="st"><thead><tr><th>#</th><th>Nama Item</th><th>Qty</th><th>Ukuran</th><th>Progress</th></tr></thead><tbody>${sHtml}</tbody></table>${r.notes?`<div style="margin-top:7px;font-size:11px;color:var(--tx2);padding:6px 9px;background:var(--s2);border-radius:5px;border:1px solid var(--bd)">📝 ${r.notes}</div>`:''}</div></td></tr>`;
+  }).join('');
+  document.getElementById('rcount').textContent = fil.length + ' request';
+  let pHtml=''; for(let i=0;i<maxP;i++)pHtml+=`<button class="pgb${i+1===pg?' act':''}" onclick="pg=${i+1};render()">${i+1}</button>`;
+  document.getElementById('pgn').innerHTML=pHtml;
+  updateStats();
+  if(document.getElementById('tab-pay').classList.contains('active-tab')) renderPay();
+}
+
+/* ════════════════════════════════════════
+   RENDER PAYMENT TRACKER TABLE
+════════════════════════════════════════ */
+function setPayField(id,f,val){ const r=data.find(x=>x.id===id); if(r){ r[f]=val; render(); showToast('✅ Update sukses'); } }
+function renderPay(){
+  let fv=document.getElementById('p-vend').value, c=role==='marcom', fs=document.getElementById('p-stat').value;
+  let fil=data.filter(r=>r.sentDate?.startsWith(activeMonth) && (!fv||r.vendor===fv) && (!fs||r.financeStatus===fs));
+  document.getElementById('empty-pay').style.display=fil.length?'none':'block';
+  
+  let totalNom=0, sumLunas=0, sumBelum=0;
+  
+  // Real-time Date
+  let dateToday = new Date().toISOString().split('T')[0];
+  document.getElementById('p-lunas-label').textContent = 'Nominal Lunas (Per ' + fmtDateID(dateToday) + ')';
+  
+  document.getElementById('tbody-pay').innerHTML=fil.map(r=>{
+    let n=Number(r.nominal)||0, tx=Number(r.taxRate)||0, net=n-(n*tx/100);
+    totalNom += net;
+    
+    if(r.financeStatus==='Lunas') {
+       sumLunas += net;
+    } else {
+       sumBelum += net;
+    }
+
+    let tS=tx===2.5?'2.5':tx===2?'2':'0';
+    return `<tr class="pr">
+      <td><div style="font-weight:700;font-family:var(--fh);max-width:180px">${r.title}</div></td>
+      <td>${vendBadgeHTML(r.vendor)}</td>
+      <td class="m">${fmtDateID(r.printDate)}</td>
+      <td>${r.invoice?`<span style="font-weight:600">${r.invoice}</span>`:`<span class="nnil">—</span>`}</td>
+      <td>
+        <select class="fs" style="padding:4px 20px 4px 8px;min-width:60px" onchange="setPayField(${r.id},'taxRate',this.value)" ${!c?'disabled':''}>
+          <option value="0" ${tS==='0'?'selected':''}>0%</option>
+          <option value="2" ${tS==='2'?'selected':''}>2%</option>
+          <option value="2.5" ${tS==='2.5'?'selected':''}>2.5%</option>
+        </select>
+      </td>
+      <td><span class="nval" style="color:var(--tx)">Rp ${net.toLocaleString('id-ID')}</span></td>
+      <td>
+        <select class="fs" style="padding:4px 20px 4px 8px;font-weight:600;color:${r.financeStatus==='Lunas'?'var(--ok)':'var(--o)'}" onchange="setPayField(${r.id},'financeStatus',this.value)" ${!c?'disabled':''}>
+          <option value="Proses Pengajuan" ${r.financeStatus!=='Lunas'?'selected':''}>Proses Pengajuan</option>
+          <option value="Lunas" ${r.financeStatus==='Lunas'?'selected':''}>Sudah Ditransfer</option>
+        </select>
+      </td>
+      <td>${mkPayDate(r.id, r.transferDate)}</td>
+    </tr>`;
+  }).join('');
+  
+  document.getElementById('p-tot').textContent=fil.length;
+  document.getElementById('p-nom').textContent='Rp '+totalNom.toLocaleString('id-ID');
+  document.getElementById('p-lunas').textContent='Rp '+sumLunas.toLocaleString('id-ID');
+  document.getElementById('p-belum').textContent='Rp '+sumBelum.toLocaleString('id-ID');
+}
+
+/* EXPORT JPG RECEIPT */
+function exportJPG() {
+  let fv = document.getElementById('p-vend').value;
+  let fs = document.getElementById('p-stat').value;
+  let d = data.filter(r=>r.sentDate?.startsWith(activeMonth) && (!fv||r.vendor===fv) && (!fs||r.financeStatus===fs));
+  
+  if(!d.length) { showToast('❌ Tidak ada data untuk diexport'); return; }
+
+  let ml = months.find(x=>x.key===activeMonth);
+  let mLabel = ml ? ml.label : 'Periode_Ini';
+  let dateToday = new Date().toISOString().split('T')[0];
+
+  document.getElementById('pa-vend').innerHTML = `
+    Vendor: <strong>${fv||'Semua Vendor'}</strong> &nbsp;&nbsp;|&nbsp;&nbsp; Periode: <strong>${mLabel}</strong>${fs?` &nbsp;&nbsp;|&nbsp;&nbsp; Status: <strong>${fs}</strong>`:''}
+    <div style="font-size:11px;color:#A89070;margin-top:4px">Dicetak per tanggal: ${fmtDateID(dateToday)}</div>
+  `;
+  
+  let html = '', sum = 0, sLunas = 0, sBelum = 0;
+  d.forEach(r => {
+    let n = Number(r.nominal) || 0, tx = Number(r.taxRate) || 0, net = n - (n * tx / 100);
+    sum += net;
+    if(r.financeStatus === 'Lunas') sLunas += net; else sBelum += net;
+
+    html += `<tr style="border-bottom:1px solid #E0D5BF">
+      <td style="padding:10px 12px;font-weight:600;color:#1C1510">${r.title}</td>
+      <td style="padding:10px 12px;color:#7A6040">${fmtDateID(r.printDate)}</td>
+      <td style="padding:10px 12px;font-weight:500">${r.invoice||'-'}</td>
+      <td style="padding:10px 12px;">${r.financeStatus==='Lunas'?`<span style="color:#1E7A46;font-weight:600">Sudah Ditransfer</span>`:`<span style="color:#E2231A;font-weight:600">Belum Ditransfer</span>`}</td>
+      <td style="padding:10px 12px;text-align:right;font-weight:600;color:#1C1510">Rp ${net.toLocaleString('id-ID')}</td>
+    </tr>`;
+  });
+  
+  document.getElementById('pa-body').innerHTML = html;
+  document.getElementById('pa-belum').textContent = 'Rp ' + sBelum.toLocaleString('id-ID');
+  document.getElementById('pa-lunas').textContent = 'Rp ' + sLunas.toLocaleString('id-ID');
+  document.getElementById('pa-tot').textContent = 'Rp ' + sum.toLocaleString('id-ID');
+
+  let el = document.getElementById('print-area');
+  html2canvas(el, {scale: 2, backgroundColor: '#EFE9DE'}).then(canvas => {
+    let a = document.createElement('a');
+    a.href = canvas.toDataURL("image/jpeg", 0.9);
+    a.download = `Rekap_Tagihan_${fv?fv.replace(/\s+/g,'_'):'Semua_Vendor'}_${mLabel.replace(/\s+/g,'_')}.jpg`;
+    a.click();
+    showToast('📥 Rekap JPG Berhasil Diunduh');
+  });
+}
+
+/* ════════════════════════════════════════
+   MODALS
+════════════════════════════════════════ */
+function openNew(){
+  editId=null; document.getElementById('mnew-t').textContent='Request Baru'; siItems=[{name:'',qty:'',size:'',progress:''}]; setFP('div',''); setFP('vend','');
+  ['e-sent','e-recv','e-title','e-outlet','e-pdate','e-trello','e-inv','e-nom','e-notes','e-prog','e-fin'].forEach(id=>document.getElementById(id).value='');
+  renderSI(); applyLock(); document.getElementById('ov-new').classList.add('show');
+}
+function openEdit(id){
+  if(role!=='marcom'){showToast('⚠️ Hanya Marcom');return;}
+  const r=data.find(x=>x.id===id); if(!r)return; editId=id; document.getElementById('mnew-t').textContent='Edit Request';
+  ['sentDate','recvDate','title','outlet','printDate','trello','invoice','notes'].forEach(f=>document.getElementById('e-'+(f==='sentDate'?'sent':f==='recvDate'?'recv':f==='printDate'?'pdate':f==='invoice'?'inv':f)).value=r[f]||'');
+  document.getElementById('e-nom').value=r.nominal?Number(r.nominal).toLocaleString('id-ID'):'';
+  ['progress','financeStatus'].forEach(f=>document.getElementById('e-'+(f==='financeStatus'?'fin':'prog')).value=r[f]||'');
+  setFP('div',r.division); setFP('vend',r.vendor); siItems=r.items.map(i=>({...i})); renderSI(); applyLock(); document.getElementById('ov-new').classList.add('show');
+}
+function applyLock(){
+  let k=role==='komersil'; document.getElementById('rbanner').style.display=k?'flex':'none'; document.getElementById('fsec-fin').style.display=k?'none':'';
+  document.querySelectorAll('[data-mc]').forEach(el=>{if(['INPUT','TEXTAREA','SELECT'].includes(el.tagName)){el.disabled=k;el.style.opacity=k?'.4':'1';}});
+  document.getElementById('fdd-div')?.classList.toggle('locked',k); document.getElementById('fdd-vend')?.classList.toggle('locked',k);
+}
+function renderSI(){
+  document.getElementById('si-list').innerHTML=siItems.map((it,i)=>`<div class="sic"><div class="sihd"><span class="sinum">Item #${i+1}</span>${siItems.length>1?`<button class="sidel" onclick="siItems.splice(${i},1);renderSI()">×</button>`:''}</div><div class="sig2"><div class="fg"><label class="fl">Nama *</label><input type="text" class="fi" value="${escH(it.name)}" oninput="siItems[${i}].name=this.value"></div><div class="fg"><label class="fl">Qty</label><input type="text" class="fi" placeholder="cth: 10 pcs" value="${escH(it.qty||'')}" oninput="siItems[${i}].qty=this.value"></div></div><div class="sig2b"><div class="fg"><label class="fl">Ukuran</label><input type="text" class="fi" value="${escH(it.size||'')}" oninput="siItems[${i}].size=this.value"></div><div class="fg"><label class="fl">Status</label><select class="fsel" ${role==='komersil'?'disabled':''} onchange="siItems[${i}].progress=this.value"><option value="">— Pilih —</option>${PROG_OPTS.map(o=>`<option value="${o}"${o===it.progress?' selected':''}>${o}</option>`).join('')}</select></div></div></div>`).join('');
+}
+function addSI(){siItems.push({name:'',qty:'',size:'',progress:''});renderSI();}
+function saveReq(){
+  let t=document.getElementById('e-title').value.trim(), o=document.getElementById('e-outlet').value.trim(); if(!t||o===''){showToast('❌ Nama & Outlet wajib');return;}
+  let req={sentDate:document.getElementById('e-sent').value,recvDate:document.getElementById('e-recv').value,title:t,outlet:o,trello:document.getElementById('e-trello').value,division:fpState.div,vendor:fpState.vend,printDate:document.getElementById('e-pdate').value,progress:document.getElementById('e-prog').value,invoice:document.getElementById('e-inv').value,nominal:document.getElementById('e-nom').value.replace(/\./g,''),financeStatus:document.getElementById('e-fin').value,notes:document.getElementById('e-notes').value,items:siItems.filter(x=>x.name.trim())};
+  if(editId){let i=data.findIndex(x=>x.id===editId);if(i>-1)data[i]={...data[i],...req};}else{req.id=Date.now();req.taxRate=0;req.transferDate='';data.unshift(req);}
+  closeNew(); syncFilters(); render(); showToast('✅ Tersimpan');
+}
+function closeNew(){document.getElementById('ov-new').classList.remove('show');}
+
+function openDet(id){
+  const r=data.find(x=>x.id===id);if(!r)return; document.getElementById('det-t').textContent=r.title;
+  let eb=document.getElementById('det-edit'); if(role==='marcom'){eb.style.display='';eb.onclick=()=>{closeDet();openEdit(id);};}else eb.style.display='none';
+  document.getElementById('det-body').innerHTML=`<div class="ds"><div class="dt">Data NPB</div><div class="dg"><div class="df"><div class="dfl">Tgl Kirim</div><div class="dfv">${fmtDateID(r.sentDate)}</div></div><div class="df"><div class="dfl">Outlet / Depo</div><div class="dfv">${r.outlet||'—'}</div></div><div class="df"><div class="dfl">Vendor</div><div class="dfv">${vendBadgeHTML(r.vendor)}</div></div><div class="df"><div class="dfl">Tgl Cetak / Nota</div><div class="dfv">${fmtDateID(r.printDate)}</div></div></div></div><div class="ds"><div class="dt">Sub-Item (${r.items.length})</div><table class="st"><thead><tr><th>Nama</th><th>Qty</th><th>Ukuran</th><th>Progress</th></tr></thead><tbody>${r.items.map(x=>`<tr><td>${x.name}</td><td>${x.qty}</td><td>${x.size}</td><td>${progBadge(x.progress)}</td></tr>`).join('')}</tbody></table></div><div class="ds"><div class="dt">Finance</div><div class="dg"><div class="df"><div class="dfl">Status Finance</div><div class="dfv">${finBadge(r.financeStatus)}</div></div><div class="df"><div class="dfl">Nominal</div><div class="dfv">${r.nominal?'Rp '+Number(r.nominal).toLocaleString('id-ID'):'—'}</div></div></div></div>`;
+  document.getElementById('ov-det').classList.add('show');
+}
+function closeDet(){document.getElementById('ov-det').classList.remove('show');}
+function closeCfm(){document.getElementById('cbox').classList.remove('show');delId=null;}
+function doDelete(){if(delId){data=data.filter(x=>x.id!==delId);expanded.delete(delId);closeCfm();render();showToast('🗑️ Terhapus');}}
+
+function doExport(){
+  let d = getFiltered();
+  let rows = [['Tgl NPB','Permintaan','Outlet','Divisi','Vendor','Tgl Cetak','Progress','Invoice','Nominal','Finance'],...d.map(r=>[r.sentDate,r.title,r.outlet,r.division,r.vendor,r.printDate,r.progress,r.invoice,r.nominal,r.financeStatus])];
+  let csv = rows.map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'})); a.download='print-tracker.csv'; a.click(); showToast('📥 Berhasil');
+}
+
+['q','f-outlet','f-div','f-vend','f-prog','f-fin'].forEach(id=>{let e=document.getElementById(id);if(e)e.addEventListener('change',()=>{pg=1;render();});});
+
+/* INIT */
+syncFilters(); renderSidebar(); renderFDD('div'); renderFDD('vend'); render();
+</script>
+</body>
+</html>
