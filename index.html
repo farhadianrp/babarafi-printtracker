@@ -214,7 +214,6 @@ select.fsel:disabled{background-image:none}
 .sidel{width:21px;height:21px;border-radius:4px;border:none;background:rgba(226,35,26,.1);color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;transition:all .15s}
 .sidel:hover{background:rgba(226,35,26,.22)}
 .sig2{display:grid;grid-template-columns:1fr 78px;gap:7px;margin-bottom:7px}
-.sig2b{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .add-si{width:100%;padding:7px;border-radius:var(--r);border:1.5px dashed var(--bd2);background:transparent;color:var(--o);font-size:11.5px;font-weight:600;font-family:var(--fb);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .15s}
 .add-si:hover{border-color:var(--o);background:rgba(244,123,32,.05)}
 
@@ -234,7 +233,7 @@ select.fsel:disabled{background-image:none}
 .fdd-opt.add{color:var(--o);font-weight:600;border-top:1px solid var(--bd)}
 .fdd-addrow{padding:8px 11px;border-top:1px solid var(--bd);display:none}
 .fdd-addrow.show{display:block}
-.fdd-addrow input[type=text]{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:5px 8px;font-size:12px;font-family:var(--fb);color:var(--tx);outline:none;margin-bottom:6px}
+.fdd-addrow input[type=text]{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:6px 8px;font-size:12px;font-family:var(--fb);color:var(--tx);outline:none;margin-bottom:6px}
 .fdd-addrow input[type=text]:focus{border-color:var(--o)}
 .fdd-colorrow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .fdd-colorrow label{font-size:10.5px;color:var(--tx3)}
@@ -270,7 +269,7 @@ select.fsel:disabled{background-image:none}
 <div id="login-screen">
   <div class="login-card">
     
-    <img src="https://via.placeholder.com/200x50?text=LOGO+DUMMY" alt="Logo Perusahaan" style="height:45px; margin-bottom:12px; border-radius:6px; object-fit:contain; width:auto; max-width:100%;">
+    <img src="https://raw.githubusercontent.com/farhadianrp/babarafi-printtracker/refs/heads/main/Original.png" alt="Logo Perusahaan" style="height:75px; margin-bottom:12px; border-radius:6px; object-fit:contain; width:auto; max-width:100%;">
     
     <div class="login-logo"><div class="logo-mark">🖨</div>Print Tracker</div>
     <div id="login-err" style="color:var(--red);font-size:12px;margin-bottom:12px;font-weight:600;display:none;">Email atau password salah!</div>
@@ -290,15 +289,15 @@ select.fsel:disabled{background-image:none}
   </div>
 </div>
 
-<nav class="nav">
-  <div class="logo">
+<nav class="nav" style="justify-content: flex-start;">
+  <div class="logo" style="width: calc(210px - 18px); flex-shrink: 0;">
     <div class="logo-mark">🖨</div>Baba Rafi
-    <div class="tab-sw">
-      <button class="t-btn active" id="tab-btn-print" onclick="switchTab('print')">Print Tracker</button>
-      <button class="t-btn" id="tab-btn-pay" onclick="switchTab('pay')">Payment Tracker</button>
-    </div>
   </div>
-  <div class="nav-r">
+  <div class="tab-sw" style="margin-left: 20px;">
+    <button class="t-btn active" id="tab-btn-print" onclick="switchTab('print')">Print Tracker</button>
+    <button class="t-btn" id="tab-btn-pay" onclick="switchTab('pay')">Payment Tracker</button>
+  </div>
+  <div class="nav-r" style="margin-left: auto;">
     <div style="display:flex;align-items:center;gap:12px;">
       <div id="role-badge" style="font-size:11px;font-weight:700;color:var(--tx);background:var(--s2);padding:4px 10px;border-radius:20px;border:1px solid var(--bd);text-transform:uppercase;">...</div>
       <button onclick="doLogout()" style="font-size:11.5px;color:var(--red);background:rgba(226,35,26,0.08);border:none;padding:5px 12px;border-radius:20px;font-weight:600;cursor:pointer;font-family:var(--fb);">Logout</button>
@@ -604,12 +603,15 @@ auth.onAuthStateChanged(user => {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('login-pass').value = ''; 
     
-    // Set Role (FIX: toLowerCase agar kebal huruf besar/kecil)
+    // Set Role
     let isKom = user.email.toLowerCase().includes('komersil');
     role = isKom ? 'komersil' : 'marcom';
     
     document.getElementById('role-badge').textContent = isKom ? 'Komersil' : 'Marcom';
     document.getElementById('sb-add-btn').style.display = isKom ? 'none' : '';
+    
+    // Tombol Request Baru tetap ADA untuk Komersil
+    document.getElementById('btn-req-baru').style.display = '';
     
     // Kunci Akses Tab Payment untuk Komersil
     if(isKom) {
@@ -662,7 +664,7 @@ function initData() {
     let arr = [];
     snap.forEach(doc => arr.push(doc.data()));
     data = arr.sort((a,b) => b.id - a.id);
-    syncFilterSelects(); // FIX: Refresh dropdown opsi segera setelah data masuk
+    syncFilterSelects(); 
     render();
   });
 }
@@ -698,11 +700,11 @@ function switchTab(t){
 }
 
 /* ════════════════════════════════════════
-   INLINE POPUP & FILTERS
+   INLINE POPUP & FILTERS (FIREBASE ADAPTED)
 ════════════════════════════════════════ */
 let activePop=null;
 function openPop(tid,rowId,field,opts,allowAdd,listName,subIdx){
-  if(role !== 'marcom') return; // FIX: Gembok tambahan
+  if(role !== 'marcom') return; // Gembok Akses Komersil
   if(activePop&&activePop.tid===tid){closePop();return;} closePop();
   const trig=document.getElementById(tid), pop=document.getElementById('ddpop'); if(!trig)return;
   const rect=trig.getBoundingClientRect(), r=data.find(x=>x.id===rowId);
@@ -728,7 +730,7 @@ function openPop(tid,rowId,field,opts,allowAdd,listName,subIdx){
   activePop={tid,rowId,field,subIdx:subIdx??-1};
 }
 function commitPopAdd(rowId,field,listName,subIdx,isV){
-  if(role !== 'marcom') return; // FIX: Gembok tambahan
+  if(role !== 'marcom') return; 
   const v=document.getElementById('pop-addinp')?.value.trim(); if(!v){showToast('❌ Kosong');return;}
   let list = listName==='vendList' ? [...vendList] : [...divList];
   let updates = {};
@@ -742,10 +744,10 @@ function commitPopAdd(rowId,field,listName,subIdx,isV){
   showToast(`✅ Disimpan`);
 }
 function pickPop(rowId,f,v,si){
-  if(role !== 'marcom') return; // FIX: Gembok tambahan
+  if(role !== 'marcom') return;
   let r=data.find(x=>x.id===rowId); if(!r)return;
   
-  // FIX: Optimistic UI (Layar berubah instan tanpa perlu menunggu Firebase)
+  // Optimistic UI
   if(si>=0) {
     r.items[si][f] = v;
     db.collection('requests').doc(rowId.toString()).update({items: [...r.items]});
@@ -767,7 +769,7 @@ function syncFilterSelects(){
 }
 
 /* ════════════════════════════════════════
-   FORM DROPDOWN (.fdd)
+   FORM DROPDOWN (.fdd) (FIREBASE ADAPTED)
 ════════════════════════════════════════ */
 function renderFDD(wh){
   const isV=wh==='vend', lst=isV?vendList:divList, val=isV?fpState.vend:fpState.div, cont=document.getElementById(isV?'fdd-vend':'fdd-div'); if(!cont)return;
@@ -832,7 +834,7 @@ document.addEventListener('click',e=>{if(!e.target.closest('#fdd-div')&&!e.targe
 function setFP(f,v){if(f==='div')fpState.div=v||''; if(f==='vend')fpState.vend=v||''; renderFDD('div');renderFDD('vend');}
 
 /* ════════════════════════════════════════
-   MAIN BEHAVIOR
+   MAIN BEHAVIOR & MUTATIONS (FIREBASE)
 ════════════════════════════════════════ */
 function setMonth(k){activeMonth=k;pg=1;syncFilters();render();}
 function renderSidebar(){ document.getElementById('sb-list').innerHTML=months.map(m=>`<div class="sb-item${m.key===activeMonth?' active':''}" onclick="setMonth('${m.key}')"><div class="sb-item-l"><span class="sb-item-name">${m.label}</span><span class="sb-item-cnt">${data.filter(r=>r.sentDate?.startsWith(m.key)).length} request</span></div>${role==='marcom'?`<button class="sb-del" onclick="event.stopPropagation();delMonthKey='${m.key}';document.getElementById('cmsg-m').textContent='Hapus periode ini?';document.getElementById('cbox-m').classList.add('show')"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>`:''}</div>`).join(''); }
@@ -858,7 +860,15 @@ function openAddMonth(){let s=document.getElementById('add-y');s.innerHTML='';fo
 
 function updateStats(){
   let r=data.filter(x=>x.sentDate?.startsWith(activeMonth));
-  document.getElementById('s-tot').textContent=r.length; document.getElementById('s-prg').textContent=r.filter(x=>['NPB Diterima','Progress Printing','Sebagian Selesai'].includes(x.progress)).length; document.getElementById('s-don').textContent=r.filter(x=>['Sudah Diserahkan','Sudah di Marcomm'].includes(x.progress)).length; document.getElementById('s-nom').textContent='Rp '+(r.reduce((s,x)=>s+(Number(x.nominal)||0),0)).toLocaleString('id-ID');
+  document.getElementById('s-tot').textContent=r.length; 
+  document.getElementById('s-prg').textContent=r.filter(x=>['NPB Diterima','Progress Printing','Sebagian Selesai'].includes(x.progress)).length; 
+  document.getElementById('s-don').textContent=r.filter(x=>['Sudah Diserahkan','Sudah di Marcomm'].includes(x.progress)).length; 
+  
+  if (role === 'komersil') {
+    document.getElementById('s-nom').innerHTML = '<span style="font-size:14px;color:var(--tx3);font-weight:700">🔒 Rahasia</span>';
+  } else {
+    document.getElementById('s-nom').textContent='Rp '+(r.reduce((s,x)=>s+(Number(x.nominal)||0),0)).toLocaleString('id-ID');
+  }
   
   let ml = months.find(x => x.key === activeMonth);
   let lbl = ml ? ml.label : '...';
@@ -876,9 +886,14 @@ function mkVendTrig(id,v){ if(role!=='marcom')return vendBadgeHTML(v); let u=`vd
 function mkDivTrig(id,v){ if(role!=='marcom')return `<span style="color:var(--tx2)">${v||'—'}</span>`; let u=`dv-${id}`; return `<div class="dd-trig" id="${u}" onclick="openPop('${u}',${id},'division',[${divList.map(o=>`'${o}'`).join(',')}],true,'divList',-1)" style="display:inline-flex;cursor:pointer"><span style="font-size:12px;color:var(--tx2)">${v||'—'}</span><svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:var(--tx3);margin-left:3px"><path d="M6 9l6 6 6-6"/></svg></div>`; }
 function mkFinTrig(id,v){ if(role!=='marcom')return finBadge(v); let u=`fn-${id}`; return `<div class="dd-trig" id="${u}" onclick="openPop('${u}',${id},'financeStatus',[${FIN_OPTS.map(o=>`'${o}'`).join(',')}],false,null,-1)" style="display:inline-flex;cursor:pointer">${finBadge(v)}<svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:var(--tx3);margin-left:3px"><path d="M6 9l6 6 6-6"/></svg></div>`; }
 
-function mkTxt(id,f,v,ph,isN,isD){ if(role!=='marcom') return isN?(v?`<span class="nval">Rp ${Number(v).toLocaleString('id-ID')}</span>`:`<span class="nnil">—</span>`):`<span style="color:var(--tx2);font-size:12px">${isD?fmtDateID(v):(v||'—')}</span>`; let u=`tx-${id}-${f}`; let dis=isN?(v?'Rp '+Number(v).toLocaleString('id-ID'):''):isD?fmtDateID(v):(v||''); return `<div class="edc" id="${u}" onclick="startTxt('${u}',${id},'${f}',${isN},${isD})"><span class="${!v?(isN?'nnil':''):isN?'nval':''}" style="font-size:12px;color:${v?'inherit':'var(--tx3)'}">${dis||ph}</span><svg class="eh" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>`; }
+function mkTxt(id,f,v,ph,isN,isD){ 
+  if(role!=='marcom') return isN?(v?`<span class="nval">Rp ${Number(v).toLocaleString('id-ID')}</span>`:`<span class="nnil">—</span>`):`<span style="color:var(--tx2);font-size:12px">${isD?fmtDateID(v):(v||'—')}</span>`; 
+  let u=`tx-${id}-${f}`; let dis=isN?(v?'Rp '+Number(v).toLocaleString('id-ID'):''):isD?fmtDateID(v):(v||''); 
+  return `<div class="edc" id="${u}" onclick="startTxt('${u}',${id},'${f}',${isN},${isD})"><span class="${!v?(isN?'nnil':''):isN?'nval':''}" style="font-size:12px;color:${v?'inherit':'var(--tx3)'}">${dis||ph}</span><svg class="eh" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>`; 
+}
+
 function startTxt(u,id,f,isN,isD){
-  if(role !== 'marcom') return; // FIX: Gembok tambahan
+  if(role !== 'marcom') return; 
   const r=data.find(x=>x.id===id), el=document.getElementById(u); if(!r||!el)return;
   let cur=r[f]||'', inpx=document.createElement('input'); inpx.className='iinp';
   if(isD){inpx.type='date';inpx.value=cur;}else{inpx.type='text';inpx.value=isN?(cur?Number(cur).toLocaleString('id-ID'):''):cur;inpx.placeholder=isN?'Nominal...':'Ketik...';}
@@ -886,9 +901,7 @@ function startTxt(u,id,f,isN,isD){
   el.replaceWith(inpx); inpx.focus(); if(!isD)inpx.select();
   const sav=()=>{ 
     let val = isD?inpx.value:isN?inpx.value.replace(/\./g,'').replace(',',''):inpx.value.trim(); 
-    
-    // FIX: Optimistic UI
-    r[f] = val; render(); 
+    r[f] = val; render(); // Optimistic UI
     db.collection('requests').doc(id.toString()).update({[f]: val}).then(()=> showToast('✅ Tersimpan'));
   };
   inpx.onblur=sav; inpx.onkeydown=e=>{if(e.key==='Enter')inpx.blur();if(e.key==='Escape'){render();}};
@@ -904,7 +917,7 @@ function mkPayDate(id, val) {
   </div>`;
 }
 function startPayDate(u, id, cur) {
-  if(role !== 'marcom') return; // FIX: Gembok tambahan
+  if(role !== 'marcom') return; 
   const r = data.find(x=>x.id===id), el=document.getElementById(u); if(!r||!el)return;
   let inp = document.createElement('input'); inp.type='date'; inp.className='iinp'; inp.value=cur;
   el.replaceWith(inp); inp.focus();
@@ -924,9 +937,17 @@ function sortBy(f){sortCfg={f,d:sortCfg.f===f?-sortCfg.d:-1};render();}
 function render(){
   let fil=getFiltered(), tb=document.getElementById('tbody'), maxP=Math.max(1,Math.ceil(fil.length/PER)); if(pg>maxP)pg=maxP;
   document.getElementById('empty').style.display=fil.length?'none':'block';
+  
   tb.innerHTML=fil.slice((pg-1)*PER,pg*PER).map(r=>{
-    let ex=expanded.has(r.id), sHtml=r.items.map((it,i)=>`<tr><td>${i+1}</td><td style="font-weight:500;color:var(--tx)">${it.name}</td><td>${it.qty}</td><td>${it.size}</td><td>${mkProgTrig(r.id,it.progress,true,i)}</td></tr>`).join('');
-    let c=role==='marcom';
+    let c = role === 'marcom';
+    let ex = expanded.has(r.id);
+    let sHtml = r.items.map((it,i)=>`<tr><td>${i+1}</td><td style="font-weight:500;color:var(--tx)">${it.name}</td><td>${it.qty}</td><td>${it.size}</td><td>${it.vendor ? vendBadgeHTML(it.vendor) : '<span style="color:var(--tx3);font-size:10px;font-style:italic">— Sama —</span>'}</td><td>${mkProgTrig(r.id,it.progress,true,i)}</td></tr>`).join('');
+    
+    // PENYENSORAN UNTUK KOMERSIL
+    let invCell = c ? mkTxt(r.id,'invoice',r.invoice,'— Invoice',false,false) : `<div style="color:var(--tx3);font-size:11px;background:var(--s2);padding:2px 6px;border-radius:4px;display:inline-block;font-weight:600;">🔒 Rahasia</div>`;
+    let nomCell = c ? mkTxt(r.id,'nominal',r.nominal,'— Nominal',true,false) : `<div style="color:var(--tx3);font-size:11px;background:var(--s2);padding:2px 6px;border-radius:4px;display:inline-block;font-weight:600;">🔒 Rahasia</div>`;
+    let finCell = c ? mkFinTrig(r.id,r.financeStatus) : `<div style="color:var(--tx3);font-size:11px;background:var(--s2);padding:2px 6px;border-radius:4px;display:inline-block;font-weight:600;">🔒 Rahasia</div>`;
+
     return `<tr class="pr${ex?' exp':''}">
       <td><div class="xb${ex?' open':''}" onclick="event.stopPropagation();expanded.has(${r.id})?expanded.delete(${r.id}):expanded.add(${r.id});render()"><svg width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div></td>
       <td class="m">${mkTxt(r.id,'sentDate',r.sentDate,'Pilih tanggal',false,true)}</td>
@@ -936,11 +957,11 @@ function render(){
       <td>${mkVendTrig(r.id,r.vendor)}</td>
       <td class="m">${mkTxt(r.id,'printDate',r.printDate,'Pilih tanggal',false,true)}</td>
       <td>${mkProgTrig(r.id,r.progress,false,-1)}</td>
-      <td>${mkTxt(r.id,'invoice',r.invoice,'— Invoice',false,false)}</td>
-      <td>${mkTxt(r.id,'nominal',r.nominal,'— Nominal',true,false)}</td>
-      <td>${mkFinTrig(r.id,r.financeStatus)}</td>
+      <td>${invCell}</td>
+      <td>${nomCell}</td>
+      <td>${finCell}</td>
       <td><div class="acell">${c?`<div class="ib" onclick="openEdit(${r.id})"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="ib del" onclick="delId=${r.id};document.getElementById('cmsg').textContent='Hapus permanen?';document.getElementById('cbox').classList.add('show')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></div>`:''}<div class="ib det" onclick="openDet(${r.id})"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div></div></td>
-    </tr><tr class="sr${ex?' vis':''}"><td colspan="12"><div class="swrap"><div class="shd"><div class="slbl">Sub-Item</div>${c?`<div class="ib" onclick="openEdit(${r.id})" style="width:auto;padding:0 8px;gap:4px;font-size:11px">Edit</div>`:''}</div><table class="st"><thead><tr><th>#</th><th>Nama Item</th><th>Qty</th><th>Ukuran</th><th>Progress</th></tr></thead><tbody>${sHtml}</tbody></table>${r.notes?`<div style="margin-top:7px;font-size:11px;color:var(--tx2);padding:6px 9px;background:var(--s2);border-radius:5px;border:1px solid var(--bd)">📝 ${r.notes}</div>`:''}</div></td></tr>`;
+    </tr><tr class="sr${ex?' vis':''}"><td colspan="12"><div class="swrap"><div class="shd"><div class="slbl">Sub-Item</div>${c?`<div class="ib" onclick="openEdit(${r.id})" style="width:auto;padding:0 8px;gap:4px;font-size:11px">Edit</div>`:''}</div><table class="st"><thead><tr><th>#</th><th>Nama Item</th><th>Qty</th><th>Ukuran</th><th>Vendor</th><th>Progress</th></tr></thead><tbody>${sHtml}</tbody></table>${r.notes?`<div style="margin-top:7px;font-size:11px;color:var(--tx2);padding:6px 9px;background:var(--s2);border-radius:5px;border:1px solid var(--bd)">📝 ${r.notes}</div>`:''}</div></td></tr>`;
   }).join('');
   document.getElementById('rcount').textContent = fil.length + ' request';
   let pHtml=''; for(let i=0;i<maxP;i++)pHtml+=`<button class="pgb${i+1===pg?' act':''}" onclick="pg=${i+1};render()">${i+1}</button>`;
@@ -1054,7 +1075,9 @@ function exportJPG() {
    MODALS & ACTIONS
 ════════════════════════════════════════ */
 function openNew(){
-  editId=null; document.getElementById('mnew-t').textContent='Request Baru'; siItems=[{name:'',qty:'',size:'',progress:''}]; setFP('div',''); setFP('vend','');
+  editId=null; document.getElementById('mnew-t').textContent='Request Baru'; 
+  siItems=[{name:'',qty:'',size:'',vendor:'',progress:''}]; // Penambahan attribute vendor sub-item
+  setFP('div',''); setFP('vend','');
   ['e-sent','e-recv','e-title','e-outlet','e-pdate','e-trello','e-inv','e-nom','e-notes','e-prog','e-fin'].forEach(id=>document.getElementById(id).value='');
   renderSI(); applyLock(); document.getElementById('ov-new').classList.add('show');
 }
@@ -1072,19 +1095,16 @@ function applyLock(){
   document.getElementById('fdd-div')?.classList.toggle('locked',k); document.getElementById('fdd-vend')?.classList.toggle('locked',k);
 }
 function renderSI(){
-  document.getElementById('si-list').innerHTML=siItems.map((it,i)=>`<div class="sic"><div class="sihd"><span class="sinum">Item #${i+1}</span>${siItems.length>1?`<button class="sidel" type="button" onclick="siItems.splice(${i},1);renderSI()">×</button>`:''}</div><div class="sig2"><div class="fg"><label class="fl">Nama *</label><input type="text" class="fi" value="${escH(it.name)}" oninput="siItems[${i}].name=this.value"></div><div class="fg"><label class="fl">Qty</label><input type="text" class="fi" placeholder="cth: 10 pcs" value="${escH(it.qty||'')}" oninput="siItems[${i}].qty=this.value"></div></div><div class="sig2b"><div class="fg"><label class="fl">Ukuran</label><input type="text" class="fi" value="${escH(it.size||'')}" oninput="siItems[${i}].size=this.value"></div><div class="fg"><label class="fl">Status</label><select class="fsel" ${role==='komersil'?'disabled':''} onchange="siItems[${i}].progress=this.value"><option value="">— Pilih —</option>${PROG_OPTS.map(o=>`<option value="${o}"${o===it.progress?' selected':''}>${o}</option>`).join('')}</select></div></div></div>`).join('');
+  document.getElementById('si-list').innerHTML=siItems.map((it,i)=>`<div class="sic"><div class="sihd"><span class="sinum">Item #${i+1}</span>${siItems.length>1?`<button class="sidel" type="button" onclick="siItems.splice(${i},1);renderSI()">×</button>`:''}</div><div class="sig2"><div class="fg"><label class="fl">Nama *</label><input type="text" class="fi" value="${escH(it.name)}" oninput="siItems[${i}].name=this.value"></div><div class="fg"><label class="fl">Qty</label><input type="text" class="fi" placeholder="cth: 10 pcs" value="${escH(it.qty||'')}" oninput="siItems[${i}].qty=this.value"></div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px"><div class="fg"><label class="fl">Ukuran</label><input type="text" class="fi" value="${escH(it.size||'')}" oninput="siItems[${i}].size=this.value"></div><div class="fg"><label class="fl">Vendor</label><select class="fsel" ${role==='komersil'?'disabled':''} onchange="siItems[${i}].vendor=this.value"><option value="">— Sama dgn Request —</option>${vendList.map(o=>`<option value="${o}"${o===it.vendor?' selected':''}>${o}</option>`).join('')}</select></div><div class="fg"><label class="fl">Status</label><select class="fsel" ${role==='komersil'?'disabled':''} onchange="siItems[${i}].progress=this.value"><option value="">— Pilih —</option>${PROG_OPTS.map(o=>`<option value="${o}"${o===it.progress?' selected':''}>${o}</option>`).join('')}</select></div></div></div>`).join('');
 }
-function addSI(){siItems.push({name:'',qty:'',size:'',progress:''});renderSI();}
+function addSI(){siItems.push({name:'',qty:'',size:'',vendor:'',progress:''});renderSI();}
 
 function saveReq(){
   let sDate = document.getElementById('e-sent').value;
   let t = document.getElementById('e-title').value.trim();
   let o = document.getElementById('e-outlet').value.trim(); 
   
-  if(!sDate || !t || o===''){
-    showToast('❌ Tgl NPB, Nama & Outlet wajib diisi!');
-    return;
-  }
+  if(!sDate || !t || o===''){ showToast('❌ Tgl NPB, Nama & Outlet wajib diisi!'); return; }
   
   let req={sentDate:sDate,recvDate:document.getElementById('e-recv').value,title:t,outlet:o,trello:document.getElementById('e-trello').value,division:fpState.div,vendor:fpState.vend,printDate:document.getElementById('e-pdate').value,progress:document.getElementById('e-prog').value,invoice:document.getElementById('e-inv').value,nominal:document.getElementById('e-nom').value.replace(/\./g,''),financeStatus:document.getElementById('e-fin').value,notes:document.getElementById('e-notes').value,items:siItems.filter(x=>x.name.trim())};
   
@@ -1094,7 +1114,6 @@ function saveReq(){
   
   db.collection('requests').doc(docId).set(req, {merge:true}).then(() => {
     closeNew(); 
-
     let reqMonth = sDate.substring(0, 7); 
     if (reqMonth !== activeMonth) {
       if(!months.find(m => m.key === reqMonth)) {
@@ -1102,12 +1121,8 @@ function saveReq(){
         let mIdx = parseInt(reqMonth.split('-')[1]) - 1;
         let label = MN[mIdx] + ' ' + year;
         let newM = [...months, {key:reqMonth, label:label}].sort((a,b)=>a.key<b.key?-1:1);
-        db.collection('system').doc('config').update({months: newM}).then(() => {
-          activeMonth = reqMonth;
-        });
-      } else {
-        activeMonth = reqMonth;
-      }
+        db.collection('system').doc('config').update({months: newM}).then(() => { activeMonth = reqMonth; });
+      } else { activeMonth = reqMonth; }
     }
     showToast('✅ Tersimpan');
   });
@@ -1118,17 +1133,16 @@ function closeNew(){document.getElementById('ov-new').classList.remove('show');}
 function openDet(id){
   const r=data.find(x=>x.id===id);if(!r)return; document.getElementById('det-t').textContent=r.title;
   let eb=document.getElementById('det-edit'); if(role==='marcom'){eb.style.display='';eb.onclick=()=>{closeDet();openEdit(id);};}else eb.style.display='none';
-  document.getElementById('det-body').innerHTML=`<div class="ds"><div class="dt">Data NPB</div><div class="dg"><div class="df"><div class="dfl">Tgl Kirim</div><div class="dfv">${fmtDateID(r.sentDate)}</div></div><div class="df"><div class="dfl">Outlet / Depo</div><div class="dfv">${r.outlet||'—'}</div></div><div class="df"><div class="dfl">Vendor</div><div class="dfv">${vendBadgeHTML(r.vendor)}</div></div><div class="df"><div class="dfl">Tgl Cetak / Nota</div><div class="dfv">${fmtDateID(r.printDate)}</div></div></div></div><div class="ds"><div class="dt">Sub-Item (${r.items.length})</div><table class="st"><thead><tr><th>Nama</th><th>Qty</th><th>Ukuran</th><th>Progress</th></tr></thead><tbody>${r.items.map(x=>`<tr><td>${x.name}</td><td>${x.qty}</td><td>${x.size}</td><td>${progBadge(x.progress)}</td></tr>`).join('')}</tbody></table></div><div class="ds"><div class="dt">Finance</div><div class="dg"><div class="df"><div class="dfl">Status Finance</div><div class="dfv">${finBadge(r.financeStatus)}</div></div><div class="df"><div class="dfl">Nominal</div><div class="dfv">${r.nominal?'Rp '+Number(r.nominal).toLocaleString('id-ID'):'—'}</div></div></div></div>`;
+  
+  let finDet = (role === 'marcom') ? `<div class="ds"><div class="dt">Finance</div><div class="dg"><div class="df"><div class="dfl">Status Finance</div><div class="dfv">${finBadge(r.financeStatus)}</div></div><div class="df"><div class="dfl">Nominal</div><div class="dfv">${r.nominal?'Rp '+Number(r.nominal).toLocaleString('id-ID'):'—'}</div></div></div></div>` : '';
+  
+  document.getElementById('det-body').innerHTML=`<div class="ds"><div class="dt">Data NPB</div><div class="dg"><div class="df"><div class="dfl">Tgl Kirim</div><div class="dfv">${fmtDateID(r.sentDate)}</div></div><div class="df"><div class="dfl">Outlet / Depo</div><div class="dfv">${r.outlet||'—'}</div></div><div class="df"><div class="dfl">Vendor</div><div class="dfv">${vendBadgeHTML(r.vendor)}</div></div><div class="df"><div class="dfl">Tgl Cetak / Nota</div><div class="dfv">${fmtDateID(r.printDate)}</div></div></div></div><div class="ds"><div class="dt">Sub-Item (${r.items.length})</div><table class="st"><thead><tr><th>Nama</th><th>Qty</th><th>Ukuran</th><th>Vendor</th><th>Progress</th></tr></thead><tbody>${r.items.map(x=>`<tr><td>${x.name}</td><td>${x.qty}</td><td>${x.size}</td><td>${x.vendor ? vendBadgeHTML(x.vendor) : '<span style="color:var(--tx3);font-size:10px;font-style:italic">—</span>'}</td><td>${progBadge(x.progress)}</td></tr>`).join('')}</tbody></table></div>${finDet}`;
   document.getElementById('ov-det').classList.add('show');
 }
 function closeDet(){document.getElementById('ov-det').classList.remove('show');}
 function closeCfm(){document.getElementById('cbox').classList.remove('show');delId=null;}
 function doDelete(){
-  if(delId){
-    db.collection('requests').doc(delId.toString()).delete().then(() => {
-      closeCfm(); showToast('🗑️ Terhapus');
-    });
-  }
+  if(delId){ db.collection('requests').doc(delId.toString()).delete().then(() => { closeCfm(); showToast('🗑️ Terhapus'); }); }
 }
 
 function doExport(){
