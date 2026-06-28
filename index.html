@@ -170,7 +170,7 @@ input[type="date"].iinp{width:auto;min-width:110px}
 .dd-color-row label{font-size:10.5px;color:var(--tx3)}
 .dd-color-row input[type=color]{width:32px;height:24px;border:1px solid var(--bd);border-radius:4px;cursor:pointer;padding:0;background:none}
 .dd-addrow-btns{display:flex;justify-content:flex-end}
-.dd-addbtn{padding:4px 10px;border-radius:5px;background:var(--o);color:#fff;border:none;font-size:11.5px;font-weight:600;cursor:pointer;font-family:var(--fb)}
+.dd-addbtn, .fdd-addbtn {padding:4px 10px;border-radius:5px;background:var(--o);color:#fff;border:none;font-size:11.5px;font-weight:600;cursor:pointer;font-family:var(--fb)}
 
 /* TABLE FOOTER */
 .tft{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-top:1px solid var(--bd);color:var(--tx3);font-size:11.5px}
@@ -240,7 +240,6 @@ select.fsel:disabled{background-image:none}
 .fdd-colorrow label{font-size:10.5px;color:var(--tx3)}
 .fdd-colorrow input[type=color]{width:32px;height:24px;border:1px solid var(--bd);border-radius:4px;cursor:pointer;padding:0;background:none}
 .fdd-addrow-btns{display:flex;justify-content:flex-end}
-.dd-addbtn{padding:4px 10px;border-radius:5px;background:var(--o);color:#fff;border:none;font-size:11.5px;font-weight:600;cursor:pointer;font-family:var(--fb)}
 
 /* EDITABLE VENDOR BUTTONS */
 .vd-btn {width: 22px; height: 22px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--tx3); transition: all .15s; background: transparent; border: none;}
@@ -722,7 +721,14 @@ function openPop(tid,rowId,field,opts,allowAdd,listName,subIdx){
   let html=!allowAdd?`<div class="ddo${!cur?' sel':''}" onclick="pickPop(${rowId},'${field}','',${subIdx??-1})">—</div>`:'';
   opts.forEach(o=>{
     let lab=field.includes('progress')?progBadge(o):field==='financeStatus'?finBadge(o):field==='vendor'?vendBadgeHTML(o):o;
-    html+=`<div class="ddo${o===cur?' sel':''}" onclick="pickPop(${rowId},'${field}','${o.replace(/'/g,"\\'")}',${subIdx??-1})">${lab}</div>`;
+    
+    // TAMBAHKAN TOMBOL DELETE JIKA INI VENDOR ATAU DIVISI DAN ROLE=MARCOM
+    let delBtn = '';
+    if (allowAdd && (listName === 'vendList' || listName === 'divList') && role === 'marcom') {
+      delBtn = `<span onclick="event.stopPropagation();delPopOpt('${listName}','${o.replace(/'/g,"\\'")}')" style="color:var(--tx3);margin-left:4px;font-size:15px;line-height:1;padding:0 5px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.color='var(--red)';this.style.background='rgba(226,35,26,0.1)'" onmouseout="this.style.color='var(--tx3)';this.style.background='transparent'">×</span>`;
+    }
+
+    html+=`<div class="ddo${o===cur?' sel':''}" onclick="pickPop(${rowId},'${field}','${o.replace(/'/g,"\\'")}',${subIdx??-1})"><div style="flex:1;display:flex;align-items:center">${lab}</div>${delBtn}</div>`;
   });
   if(allowAdd){
     let isV=listName==='vendList';
@@ -753,6 +759,25 @@ function commitPopAdd(rowId,field,listName,subIdx,isV){
   pickPop(rowId,field,v,subIdx);
   showToast(`✅ Disimpan`);
 }
+
+// LOGIKA DELETE UNTUK INLINE POPUP DROPDOWN
+function delPopOpt(listName, val) {
+  if (role !== 'marcom') return;
+  if (confirm(`Hapus opsi "${val}"?`)) {
+    let list = listName === 'vendList' ? vendList.filter(x => x !== val) : divList.filter(x => x !== val);
+    let updates = { [listName]: list };
+    if (listName === 'vendList') {
+      let vc = { ...VEND_COLORS }; delete vc[val]; updates.VEND_COLORS = vc;
+      data.filter(r => r.vendor === val).forEach(r => db.collection('requests').doc(r.id.toString()).update({ vendor: '' }));
+    } else {
+      data.filter(r => r.division === val).forEach(r => db.collection('requests').doc(r.id.toString()).update({ division: '' }));
+    }
+    db.collection('system').doc('config').update(updates);
+    closePop();
+    showToast('🗑️ Opsi Dihapus');
+  }
+}
+
 function pickPop(rowId,f,v,si){
   if(role !== 'marcom') return; // FIX: Gembok tambahan
   let r=data.find(x=>x.id===rowId); if(!r)return;
@@ -790,12 +815,12 @@ function renderFDD(wh){
       opts+=`<div class="fdd-addrow show" style="border-top:none;background:var(--s2);margin:2px 6px;border-radius:6px;padding:8px">
         <input type="text" class="fdd-editinp" value="${v.replace(/"/g,'&quot;')}" style="width:100%;background:var(--s1);border:1px solid var(--bd);border-radius:5px;padding:5px 7px;font-size:11.5px;outline:none;margin-bottom:6px">
         <div class="fdd-colorrow"><label style="font-size:10px">Warna:</label><input type="color" class="fdd-editcolor" value="${(VEND_COLORS[v]?.tx)||'#6B7280'}"></div>
-        <div style="display:flex;gap:6px"><button class="fdd-addbtn" type="button" data-act="sav" data-old="${v.replace(/"/g,'&quot;')}" style="flex:1;padding:5px">Simpan</button><button class="fdd-addbtn" type="button" data-act="can" style="flex:1;padding:5px;background:var(--bd);color:var(--tx)">Batal</button></div></div>`;
+        <div style="display:flex;gap:6px"><button class="dd-addbtn" type="button" data-act="sav" data-old="${v.replace(/"/g,'&quot;')}" style="flex:1;padding:5px">Simpan</button><button class="dd-addbtn" type="button" data-act="can" style="flex:1;padding:5px;background:var(--bd);color:var(--tx)">Batal</button></div></div>`;
     }else{
       opts+=`<div class="fdd-opt${v===val?' sel':''}" data-act="pick" data-val="${v.replace(/"/g,'&quot;')}"><div style="flex:1">${isV?vendBadgeHTML(v):v}</div>${isV?`<div class="vend-acts"><button class="vd-btn edit" type="button" data-act="ed" data-val="${v.replace(/"/g,'&quot;')}"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="vd-btn del" type="button" data-act="del" data-val="${v.replace(/"/g,'&quot;')}"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`:''}</div>`;
     }
   });
-  opts+=`<div class="fdd-opt add" data-act="sadd">+ Tambahkan Lainnya…</div><div class="fdd-addrow${fddAddOpen[wh]?' show':''}"><input type="text" class="fdd-addinp" placeholder="Baru...">${isV?`<div class="fdd-colorrow"><label>Warna:</label><input type="color" class="fdd-addcolor" value="#9B59B6"></div>`:''}<button class="fdd-addbtn" type="button" data-act="com">Tambah</button></div>`;
+  opts+=`<div class="fdd-opt add" data-act="sadd">+ Tambahkan Lainnya…</div><div class="fdd-addrow${fddAddOpen[wh]?' show':''}"><input type="text" class="fdd-addinp" placeholder="Baru...">${isV?`<div class="fdd-colorrow"><label>Warna:</label><input type="color" class="fdd-addcolor" value="#9B59B6"></div>`:''}<button class="dd-addbtn" type="button" data-act="com">Tambah</button></div>`;
   cont.className='fdd'+(fddOpen[wh]?' open':''); cont.innerHTML=html+`<div class="fdd-menu">${opts}</div>`;
 
   cont.querySelector('[data-act="tog"]').onclick=e=>{e.stopPropagation(); fddOpen[wh]=!fddOpen[wh]; if(!fddOpen[wh])fddAddOpen[wh]=false; fddOpen[isV?'div':'vend']=false; fddAddOpen[isV?'div':'vend']=false; fddEditVend=null; renderFDD('div'); renderFDD('vend');};
@@ -810,6 +835,7 @@ function renderFDD(wh){
     if(isV){ updates.VEND_COLORS = {...VEND_COLORS, [nv]:{bg:hexToRgba(cont.querySelector('.fdd-addcolor').value,0.15),tx:cont.querySelector('.fdd-addcolor').value}}; }
     if(Object.keys(updates).length > 0) db.collection('system').doc('config').update(updates);
     if(isV)fpState.vend=nv; else fpState.div=nv; fddOpen[wh]=fddAddOpen[wh]=false;
+    renderFDD(wh); // MENCEGAH DELAY (OPTIMISTIC UI INSTAN)
   };
   
   if(isV){
@@ -821,6 +847,7 @@ function renderFDD(wh){
         db.collection('system').doc('config').update({vendList: nv, VEND_COLORS: vc});
         data.filter(r=>r.vendor===v).forEach(r => db.collection('requests').doc(r.id.toString()).update({vendor: ''}));
         if(fpState.vend===v)fpState.vend=''; fddEditVend=null;
+        renderFDD(wh); // MENCEGAH DELAY (OPTIMISTIC UI INSTAN)
       }
     });
     cont.querySelectorAll('[data-act="can"]').forEach(b=>b.onclick=e=>{e.stopPropagation(); fddEditVend=null; renderFDD(wh);});
@@ -835,6 +862,7 @@ function renderFDD(wh){
       let vc = {...VEND_COLORS}; delete vc[ov]; vc[nv]={bg:hexToRgba(c,0.15),tx:c}; updates.VEND_COLORS = vc;
       db.collection('system').doc('config').update(updates);
       fddEditVend=null;
+      renderFDD(wh); // MENCEGAH DELAY (OPTIMISTIC UI INSTAN)
     });
     cont.querySelectorAll('.fdd-editinp, .fdd-editcolor').forEach(el=>el.onclick=e=>e.stopPropagation());
   }
